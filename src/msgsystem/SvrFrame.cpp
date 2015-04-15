@@ -36,7 +36,7 @@ int SvrFrame::ClientInit(CLIENT_INFO_T* client){
  * 建立长连接
  */
 int SvrFrame::ConnectTo(int* sockfd, CLIENT_INFO_T* client){
-
+    int ret = 0;
     printf("ConnectTo (in)\n");
 
     struct sockaddr_in my_addr;

@@ -21,7 +21,7 @@ LIB = -lpthread  -lrt -ljson -lencrypt -liconv -lprotobuf
 
 #设置头文件引用路径
 #####################################################################
-CINC = -I/usr/local/include -I/usr/include  -I../protocol -I../comm -I. -I../protocolbuffer
+CINC = -I/usr/local/include -I/usr/include -I../encryptlib  -I../protocol -I../comm -I. -I../protocolbuffer
 
 ######设置编译选项######
 CXXFLAGS = -Wall  -g   -O2
