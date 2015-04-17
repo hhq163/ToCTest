@@ -7,6 +7,7 @@
 
 #include "Common.h"
 #include "Log.h"
+#include "Config.h"
 #include "SvrFrame.h"
 
 SvrFrame::SvrFrame() {
@@ -28,6 +29,15 @@ int SvrFrame::ClientInit(CLIENT_INFO_T* client){
     client->user_id = USER_ID;
     client->circle_id = GROUP_ID;
     client->islogin = false;
+
+    if (!Logger.Init(g_oConfig.m_dwID, 0, 0))
+    {
+        printf("log init failed!!!\r\n");
+        return -1;
+    }
+    /* 设置打印级别 */
+    Logger.SetLogLevel(g_oConfig.m_wLogLevel, true);
+
 
     return ERR_SUCCESS;
 }
@@ -81,6 +91,6 @@ int SvrFrame::ConnectTo(int* sockfd, CLIENT_INFO_T* client){
         return ERR_FAILED;
     }
 
-    printf("yunlai_connect (out)\n");
+    printf("ConnectTo (out)\n");
     return ERR_SUCCESS;
 }

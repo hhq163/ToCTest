@@ -1,0 +1,108 @@
+#####################################################################
+#设置编译器
+#####################################################################
+CC = g++
+
+#####################################################################
+#设置目录结构
+#####################################################################
+SRC_DIR = .
+OBJ_DIR = .
+PROTOCOL_DIR = ../protocol
+LIBPATH=-L../../lib
+VPATH = $(SRC_DIR)\
+        ../comm\
+        ../protocolbuffer\
+
+#####################################################################
+#生产环境使用：   RUN_ENVIRONMENT = 1
+#预发布环境使用： RUN_ENVIRONMENT = 2
+#测试环境使用：   RUN_ENVIRONMENT = 3
+#开发环境使用：   RUN_ENVIRONMENT = 4
+#开发者本地用：   RUN_ENVIRONMENT = 5
+#####################################################################
+RUN_ENVIRONMENT = 4
+
+#####################################################################
+#设置依赖关系
+#####################################################################
+vpath %.o $(OBJ_DIR)
+SOURCES = $(foreach path, $(VPATH), $(wildcard $(path)/*.cpp))
+OBJECTS = $(notdir $(SOURCES:.cpp=.o))
+
+#设置依赖关系，协议部分
+PROTOCOL_SRC = $(wildcard $(PROTOCOL_DIR)/*.cpp)
+PROTOCOL_OBJ = $(PROTOCOL_SRC:.cpp=.o)
+
+#####################################################################
+#设置库文件
+#####################################################################
+LIB = -lpthread  -lrt -lencrypt -liconv -lprotobuf
+
+
+#####################################################################
+#设置头文件引用路径
+#####################################################################
+CINC = -I/usr/include -I../encryptlib -I../protocolbuffer -I../protocol -I../comm -I. -I../../include
+
+
+#####################################################################
+#设置编译选项
+#####################################################################
+CXXFLAGS = -Wall  -g   -O2
+LDFLAGS = -Wl,-rpath,$(RUNLIBPATH)  -Wl,-rpath,/usr/local/lib
+
+
+#####################################################################
+#  HAVE_DEBUG_TEST = 1  添加测试打印
+#  HAVE_DEBUG_TEST = 0  不添加测试打印
+#####################################################################
+HAVE_DEBUG_TEST = 1
+
+#####################################################################
+#  HAVE_DEBUG_KEVENT = 1  添加kevent个人测试打印
+#  HAVE_DEBUG_KEVENT = 0  不添加测试打印
+#####################################################################
+HAVE_DEBUG_KEVENT = 1
+
+#####################################################################
+#  HAVE_WORD_CENSOR = 1  添加敏感词过滤
+#  HAVE_WORD_CENSOR = 0  不添加敏感词过滤
+#####################################################################
+HAVE_WORD_CENSOR = 1
+
+#####################################################################
+#配置功能在以下添加
+#####################################################################
+ifeq ($(HAVE_DEBUG), 1)
+	CXXFLAGS += -DHAVE_DEBUG_KEVENT
+endif
+
+ifeq ($(HAVE_DEBUG_TEST), 1)
+	CXXFLAGS += -DHAVE_DEBUG_TEST
+endif
+
+ifeq ($(HAVE_WORD_CENSOR), 1)
+	CXXFLAGS += -DHAVE_WORD_CENSOR
+endif
+
+ifeq ($(RUN_ENVIRONMENT), 1)
+	CXXFLAGS += -DRUN_IN_PRODUCE
+	RUNLIBPATH=/home/im/yunquan/lib
+
+else ifeq ($(RUN_ENVIRONMENT), 2)
+	CXXFLAGS += -DRUN_IN_PREPARE
+	RUNLIBPATH=/home/im/yunquan/lib
+
+else ifeq ($(RUN_ENVIRONMENT), 3)
+	CXXFLAGS += -DRUN_IN_TEST
+	RUNLIBPATH=/home/im/yunquan/lib
+
+else ifeq ($(RUN_ENVIRONMENT), 4)
+	CXXFLAGS += -DRUN_IN_DEVELOP
+	RUNLIBPATH=/home/im/yunquan/lib
+
+else ifeq ($(RUN_ENVIRONMENT), 5)
+	CXXFLAGS += -DRUN_IN_USER
+	RUNLIBPATH=/home/kevent/project_yunquan/im/lib
+endif

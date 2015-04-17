@@ -16,22 +16,22 @@ public:
     TestCase();
     virtual ~TestCase();
 
-    int UserLogin();
-    int GroupMsgSend(CLIENT_INFO_T* client);//群聊消息发送
+    int UserLogin(CLIENT_INFO_T* userClient);
+    int GroupMsgSend(CLIENT_INFO_T* userClient);//群聊消息发送
     int GroupJoin();//加入群
     int GroupInfoChange();//群信息变更
 
     int HandlePkg(CMsgBase* pMsg);
 
-    virtual int Read();
-    virtual int Write(CMsgBase* pMsg, CLIENT_INFO_T* client);
+    virtual int Read(CLIENT_INFO_T* userClient);
+    virtual int Write(CMsgBase* pMsg, CLIENT_INFO_T* userClient);
 
 protected:
     virtual int Parse(uint8* pBuf, int32 &dwSize, CMsgBase** ppOutMsg);
     virtual int Pack(uint8* pBuf, int32 &dwSize, CMsgBase* pInMsg);
 
-    int SendPkg(CLIENT_INFO_T* client);
-    int RecvPkg();
+    int SendPkg(CLIENT_INFO_T* userClient);
+    int RecvPkg(CLIENT_INFO_T* userClient);
 
     BUFFER_t    m_stSendBuffer, m_stRecvBuffer;//发送数据缓存，接受数据缓存
 };

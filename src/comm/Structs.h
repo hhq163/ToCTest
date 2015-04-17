@@ -7,6 +7,9 @@
 
 #include "Common.h"
 
+
+#pragma pack(1) //指明下面结构体按照1字节方式进行对齐，无空字节
+
 struct BUFFER_t
 {
     uint32  iSize;
@@ -14,8 +17,7 @@ struct BUFFER_t
     uint8   cBuffer[MAX_BUFFER_SIZE];
 };
 
-
-typedef struct
+struct CLIENT_INFO_T
 {
     pthread_t recvmsg_task_handle;
     pthread_t heartbeat_task_handle;
@@ -24,9 +26,7 @@ typedef struct
     int user_id;
     int circle_id;
     bool islogin;
-}CLIENT_INFO_T;
-
-#pragma pack(1) //指明下面结构体按照1字节方式进行对齐，无空字节
+};
 
 typedef struct
 {

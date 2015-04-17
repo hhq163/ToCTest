@@ -22,7 +22,6 @@ protected:
 
 public:
     uint32 m_dwFromUid;
-    uint64 m_llMsgId;
     time_t m_sendtime;
     uint32 m_dwObjType;
     MsgObjBase* m_MsgObjBase;

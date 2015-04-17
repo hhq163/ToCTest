@@ -1,19 +1,22 @@
 #include "Common.h"
 #include "Log.h"
+#include "SvrFrame.h"
 #include "TestCase.h"
-#include "gtest.h"
 
 using namespace std;
 
-/*
-TEST(TestCase, GroupMsgSend){
-    TestCase tc;
-    EXPECT_EQ(1, tc.GroupMsgSend("this is my first message!!!"));
-    EXPECT_EQ(1, tc.GroupMsgSend("second"));
-    EXPECT_EQ(1, tc.GroupMsgSend("third"));
-}*/
-
 TestCase testCase;
+static CLIENT_INFO_T client_info_t[1];
+
+/**
+ * 线程回调函数
+ */
+void* RecvmsgTask(void *param)
+{
+    testCase.Read(client_info_t);
+    return NULL;
+}
+
 
 /**
  * 测试主程序
@@ -21,15 +24,13 @@ TestCase testCase;
 int main(int argc, char **argv)
 {
     int caseId = 0;
-
     int ret;
-
-    CLIENT_INFO_T* client_info_t;
+    memset(client_info_t, 0x00, sizeof(CLIENT_INFO_T));
 
     SvrFrame svrFrame;
+
     //客户端初如化
     svrFrame.ClientInit(client_info_t);
-
     //建立长连接
     svrFrame.ConnectTo(&client_info_t->sockfd, client_info_t);
 
@@ -48,7 +49,8 @@ int main(int argc, char **argv)
          printf("heartbeat  thread create failure.\n");
     }
 #endif
-    //暂不做用户登录
+    //用户登录
+    testCase.UserLogin(client_info_t);
 
     while(4 != caseId){
         cout << "Enter TestCase ID number: \n" <<
@@ -81,12 +83,5 @@ int main(int argc, char **argv)
 
     return ERR_SUCCESS;
 }
-/**
- * 线程回调函数
- */
-void* RecvmsgTask(void *param)
-{
-    testCase.Read();
-    return NULL;
-}
+
 

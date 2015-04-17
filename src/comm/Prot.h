@@ -2,10 +2,10 @@
 #define _PROTOCOL_H_
 
 #include "Common.h"
-#include "Struct.h"
 #include "base64.h"
 
 #include "Common.pb.h"
+#include "Structs.h"
 using namespace yunquan;
 
 #include "CMsgBase.h"
@@ -31,6 +31,6 @@ using namespace yunquan;
 #include "CMsgNotify.h"
 #include "CCSGroupUserListGetAck.h"
 #include "CCSGroupUserListGet.h"
-
+#include "CCSGroupUserAdd.h"
 
 #endif

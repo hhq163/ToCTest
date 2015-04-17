@@ -6,13 +6,14 @@
  */
 
 #include "Common.h"
+#include "Prot.h"
 #include "Log.h"
+#include "MsgObj.h"
 #include "ChatMsg.pb.h"
 #include "TestCase.h"
 
 TestCase::TestCase() {
     // TODO Auto-generated constructor stub
-    UserLogin();
 }
 
 TestCase::~TestCase() {
@@ -21,18 +22,26 @@ TestCase::~TestCase() {
 /**
  * 用户登录
  */
-int TestCase::UserLogin(){
+int TestCase::UserLogin(CLIENT_INFO_T* userClient){
     cout << "YTestCase::UserLogin (in) \n" << endl;
+    int ret = 0;
 
+    CMsgUserLogin *pCMsgUserLogin = (CMsgUserLogin*)CMsgBase::NewMsg(CMD_USER_LOGIN);
+    pCMsgUserLogin->m_dwId = USER_ID;
+    pCMsgUserLogin->m_wClientType = CT_ANDROID;
+    pCMsgUserLogin->m_ClientId = "goodboy";
+    pCMsgUserLogin->m_ClientSecret = "yunquansljdsfd";
 
-    cout << "YTestCase::UserLogin (out) \n" << endl;
+    ret = this->Write(pCMsgUserLogin, userClient);
+
+    cout << "YTestCase::UserLogin (out) ret = "<< ret<<"\n" << endl;
     return ERR_SUCCESS;
 };
 /**
  * 群聊消息发送
  */
-int TestCase::GroupMsgSend(CLIENT_INFO_T* client){
-    cout << "YTestCase::GroupMsgSend (in) \n" << endl;
+int TestCase::GroupMsgSend(CLIENT_INFO_T* userClient){
+    Logger.Log(INFO, "YTestCase::GroupMsgSend (in) 111");
 
     int8 msg_send[1024] = {'\0'};
     int sendcase = 0;
@@ -41,29 +50,34 @@ int TestCase::GroupMsgSend(CLIENT_INFO_T* client){
     struct timeval tv;
     gettimeofday(&tv, NULL) ;
 
-    while(1 == sendcase){
+    while(1 != sendcase){
         cout << "Please input the msg your want to send: \n" << endl;
         cin >> msg_send;
         if(strlen(msg_send) != 0){
             MsgText* msgText = new MsgText();
             msgText->type = 1;
             msgText->msg = msg_send;
-            CChatMsgSend* pCChatMsgSend = (CChatMsgRecv*)CMsgBase::NewMsg(CMD_MSG_GROUP_SEND);
-            pCChatMsgSend->m_dwFromUid = GROUP_ID;
+
+            CChatMsgSend* pCChatMsgSend = (CChatMsgSend*)CMsgBase::NewMsg(CMD_MSG_GROUP_SEND);
+            pCChatMsgSend->m_dwId = GROUP_ID;
+            pCChatMsgSend->m_dwFromUid = USER_ID;
             pCChatMsgSend->m_dwSeqId = 16;
             pCChatMsgSend->m_dwObjType = MOT_TEXT;
             pCChatMsgSend->m_sendtime = time(0);
             pCChatMsgSend->m_MsgObjBase = msgText;
-            pCChatMsgSend->m_msgId  = (tv.tv_sec * 1000000 + tv.tv_usec);
+            pCChatMsgSend->m_msgId = 12458;
+//            pCChatMsgSend->m_msgId  = (tv.tv_sec * 1000000 + tv.tv_usec);
 
-            Write(pCChatMsgSend, client);
+            Logger.Log(INFO, "TestCase::GroupMsgSend2222");
+            ret = this->Write(pCChatMsgSend, userClient);
             if(ret < 0)
             {
                 printf("message send failure. ret=%d\n", ret);
                 return ERR_FAILED;
             }
+
         }else{//如果输入是空，跳出程序
-            sendcase = 1;
+//            sendcase = 1;
         }
 
     }
@@ -79,6 +93,9 @@ int TestCase::GroupMsgSend(CLIENT_INFO_T* client){
  */
 int TestCase::GroupJoin(){
     cout << "YTestCase::GroupJoin (in) \n" << endl;
+    CCSGroupUserAdd* pGroupUserAdd = (CCSGroupUserAdd*)CMsgBase::NewMsg(CMD_GROUP_MEMBER_ADD);
+    pGroupUserAdd->m_dwId = 85;
+//    pGroupUserAdd->
 
     cout << "YTestCase::GroupJoin (out) \n" << endl;
     return ERR_SUCCESS;
@@ -98,12 +115,12 @@ int TestCase::GroupInfoChange(){
 /**
  * 消息读取
  */
-int TestCase::Read()
+int TestCase::Read(CLIENT_INFO_T* userClient)
 {
     int iRet = IO_SUCCESS;
     do
     {
-        iRet = RecvPkg();
+        iRet = RecvPkg(userClient);
 
         if (m_stRecvBuffer.iSize > 0)
         {
@@ -116,7 +133,7 @@ int TestCase::Read()
                 int iErr = Parse(p, dwSize, &pMsg);
                 if (ERR_SUCCESS == iErr)
                 {
-                    pMsg->m_pRoute = this;
+//                    pMsg->m_pRoute = this;
                     if (ERR_SUCCESS == HandlePkg(pMsg))
                     {
                         CMsgBase::DelMsg(pMsg);
@@ -169,16 +186,56 @@ int TestCase::Read()
 
     return ERR_SUCCESS;
 }
+/**
+ * 接收数据包
+ */
+int TestCase::RecvPkg(CLIENT_INFO_T* userClient)
+{
+    int iErr = IO_FAILED;
 
+    // recv data
+    while( userClient->sockfd >= 0 && m_stRecvBuffer.iSize < MAX_BUFFER_SIZE )
+    {
+        int iRet = recv(userClient->sockfd, m_stRecvBuffer.cBuffer + m_stRecvBuffer.iSize, MAX_BUFFER_SIZE - m_stRecvBuffer.iSize, 0);
+        if(iRet == 0)
+        {
+            Logger.Log(DEBUG, "socket:%d peer shutdown", userClient->sockfd);
+
+            iErr = IO_CLOSE;
+            break;
+        }
+        else if(iRet < 0)
+        {
+            if(EAGAIN == errno)
+            {
+                iErr          = IO_EAGAIN;
+//                m_tActiveTime = time(NULL);
+                break;
+            }
+            Logger.Log(ERROR, "socket:[%d] recv error:%s", userClient->sockfd, strerror(errno));
+            iErr = IO_CLOSE;
+            break;
+        }
+        else
+        {
+            iErr = IO_SUCCESS;
+            m_stRecvBuffer.iSize += iRet;
+//            m_tActiveTime         = time(NULL);
+        }
+    }
+
+    return iErr;
+}
 
 /**
  * 消息发送
  */
-int TestCase::Write(CMsgBase* pMsg, CLIENT_INFO_T* client)
+int TestCase::Write(CMsgBase* pMsg, CLIENT_INFO_T* userClient)
 {
+    Logger.Log(INFO, "TestCase::Write111 destUserId=%d", pMsg->m_dwId);
     int iRet = IO_SUCCESS;
-    do
-    {
+//    do
+//    {
         if (0 == m_stSendBuffer.iSize && 0 == m_stSendBuffer.iTotal)
         {
 
@@ -187,11 +244,11 @@ int TestCase::Write(CMsgBase* pMsg, CLIENT_INFO_T* client)
 
             if (CMD_SYS_HEART_BEAT != pMsg->m_wCmd && CMD_SYS_HEART_BEAT_ACK != pMsg->m_wCmd)
             {
-                Logger.Log(NOTIC, "<<<<<<  write cmd:[0x%04x] [0x%04x] , to user:%lld, err:%d",\
+                Logger.Log(NOTIC, "<<<<<<  write cmd:[0x%04x] [0x%04x] , to user:%d, err:%d",\
                     (pMsg->m_wCmd), (pMsg->m_wCmd) & ~CMD_INNER_FLAGE, pMsg->m_dwId, iErr);
             }
 
-
+#if 0
             if (CMD_SYS_HEART_BEAT != pMsg->m_wCmd)
             {
                 CMsgBase::DelMsg(pMsg);
@@ -201,13 +258,14 @@ int TestCase::Write(CMsgBase* pMsg, CLIENT_INFO_T* client)
             {
                 continue;
             }
-
+#endif
             m_stSendBuffer.iTotal = dwSize;
         }
 
-        iRet = SendPkg(client);
+        iRet = SendPkg(userClient);
 
-    } while (IO_SUCCESS == iRet);
+//    } while (IO_SUCCESS == iRet);
+
 
     return ERR_SUCCESS;
 }
@@ -215,14 +273,14 @@ int TestCase::Write(CMsgBase* pMsg, CLIENT_INFO_T* client)
 /**
  * 数据发送
  */
-int TestCase::SendPkg(CLIENT_INFO_T* client)
+int TestCase::SendPkg(CLIENT_INFO_T* userClient)
 {
     int iErr = IO_FAILED;
 
-    while (client->sockfd >= 0  && m_stSendBuffer.iSize < m_stSendBuffer.iTotal)
+    while (userClient->sockfd >= 0  && m_stSendBuffer.iSize < m_stSendBuffer.iTotal)
     {
         Logger.Log(DEBUG, "buffer total:%d size:%d", m_stSendBuffer.iTotal, m_stSendBuffer.iSize);
-        int iRet = send(client->sockfd, m_stSendBuffer.cBuffer + m_stSendBuffer.iSize, m_stSendBuffer.iTotal - m_stSendBuffer.iSize, 0);
+        int iRet = send(userClient->sockfd, m_stSendBuffer.cBuffer + m_stSendBuffer.iSize, m_stSendBuffer.iTotal - m_stSendBuffer.iSize, 0);
         if (iRet < 0)
         {
             if (EAGAIN == errno)
@@ -231,15 +289,17 @@ int TestCase::SendPkg(CLIENT_INFO_T* client)
                 break;
             }
 
-            Logger.Log(DEBUG, "socket:%d send error:%s", client->sockfd, strerror(errno));
+            Logger.Log(DEBUG, "socket:%d send error:%s", userClient->sockfd, strerror(errno));
             iErr = IO_CLOSE;
             break;
         }
         else if(iRet == 0)
         {
+            Logger.Log(INFO, "iRet == 0");
         }
         else
         {
+            Logger.Log(INFO, "iRet>0 iRet=%d", iRet);
             iErr = IO_SUCCESS;
             m_stSendBuffer.iSize += iRet;
             if (m_stSendBuffer.iSize == m_stSendBuffer.iTotal)
@@ -247,11 +307,12 @@ int TestCase::SendPkg(CLIENT_INFO_T* client)
                 m_stSendBuffer.iSize  = 0;
                 m_stSendBuffer.iTotal = 0;
                 memset(m_stSendBuffer.cBuffer, 0x00, sizeof(m_stSendBuffer.cBuffer));
+
                 break;
             }
         }
     }
-
+//    Logger.Log(INFO, "77777");
     return iErr ;
 }
 
@@ -289,12 +350,12 @@ int TestCase::HandlePkg(CMsgBase* pMsg)
 {
     switch(pMsg->m_wCmd)
     {
-        case CMD_USER_LOGIN:
+        case CMD_USER_LOGIN_ACK:
         {
             Logger.Log(INFO, " The CMD_USER_LOGIN CMD request come back!");
             break;
         }
-        case CMD_MSG_GROUP_SEND:
+        case CMD_MSG_GROUP_SEND_ACK:
         {
             Logger.Log(INFO, "The CMD_MSG_GROUP_SEND CMD request come back!");
             break;

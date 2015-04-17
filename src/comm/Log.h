@@ -27,29 +27,10 @@ enum LOG_LEVEL
 #define MAX_LOG_BUFFER  2048
 #define MAX_LOG_PATH    256
 
-#ifdef __CONNECT_SVR__
-#define DEFAULT_LOG_PATH    "../../log/connectsvr/cs"
-#define DEFAULT_STAT_PATH   "../../stat/cn"
+#ifdef __MSGSYS_SVR__
+#define DEFAULT_LOG_PATH    "../../log/msgsystem/ms"
+#define DEFAULT_STAT_PATH   "../../stat/ms"
 
-#elif defined(__LOGIC_SVR__)
-#define DEFAULT_LOG_PATH    "../../log/logicsvr/ls"
-#define DEFAULT_STAT_PATH   "../../stat/ls"
-
-#elif defined(__SYNC_SVR__)
-#define DEFAULT_LOG_PATH    "../../log/syncsvr/ss"
-#define DEFAULT_STAT_PATH   "../../static/ss"
-
-#elif defined(__PUSH_SVR__)
-#define DEFAULT_LOG_PATH    "../../log/pushsvr/ps"
-#define DEFAULT_STAT_PATH   "../../static/cs"
-
-#elif defined(__P2PCHAT_SVR__)
-#define DEFAULT_LOG_PATH    "../../log/p2pchatsvr/ps"
-#define DEFAULT_STAT_PATH   "../../stat/ps"
-
-#elif defined(__GROUPCHAT_SVR__)
-#define DEFAULT_LOG_PATH    "../../log/groupchatsvr/gs"
-#define DEFAULT_STAT_PATH   "../../stat/gs"
 
 #endif
 
