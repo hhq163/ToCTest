@@ -9,7 +9,6 @@
 CChatMsgSend::CChatMsgSend()
 {
     m_dwFromUid = 0;
-    m_sendtime = 0;
     m_dwObjType = 0;
 }
 
@@ -171,53 +170,54 @@ int CChatMsgSend::Pack(uint8* pBuf, int32& dwSize)
     pChatMsg->set_time(m_sendtime);
     pChatMsg->set_type((E_MSG_OBJECT_TYPE)m_dwObjType);
     Logger.Log(ERROR, "222");
+
+
     switch(pChatMsg->type())
     {
     case MOT_SYSTEM:
     {
-        MsgObjSystem* objSystem = pChatMsg->mutable_objsystem();
-        objSystem->set_type(((MsgSystem*)m_MsgObjBase)->type);
-        objSystem->set_msg(((MsgSystem*)m_MsgObjBase)->msg);
-
-//        MsgObjSystem * pMsgObj = new MsgObjSystem();
-//        pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
-//        pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
+//        MsgObjSystem* objSystem = pChatMsg->mutable_objsystem();
+//        objSystem->set_type(((MsgSystem*)m_MsgObjBase)->type);
+//        objSystem->set_msg(((MsgSystem*)m_MsgObjBase)->msg);
+        MsgObjSystem * pMsgObj = new MsgObjSystem();
+        pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
+        pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
 //        pChatMsg->mutable_objsystem();
-//        pChatMsg->set_allocated_objsystem(pMsgObj);
+        pChatMsg->set_allocated_objsystem(pMsgObj);
 
         break;
     }
     case MOT_TEXT:
     {
-        Logger.Log(ERROR, "333");
-        MsgObjText* objText = pChatMsg->mutable_objtext();
-        objText->set_type(((MsgText*)m_MsgObjBase)->type);
-        objText->set_msg(((MsgText*)m_MsgObjBase)->msg);
-        Logger.Log(ERROR, "type:%d msg:%s", ((MsgSystem*)m_MsgObjBase)->type, ((MsgSystem*)m_MsgObjBase)->msg);
+//        Logger.Log(ERROR, "333");
+//        MsgObjText* objText = pChatMsg->mutable_objtext();
+//        objText->set_type(((MsgText*)m_MsgObjBase)->type);
+//        objText->set_msg(((MsgText*)m_MsgObjBase)->msg);
+//        Logger.Log(ERROR, "type:%d msg:%s", ((MsgSystem*)m_MsgObjBase)->type, ((MsgSystem*)m_MsgObjBase)->msg.c_str());
 
-//        MsgObjText * pMsgObj = new MsgObjText();
-//        pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
-//        pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
+        MsgObjText * pMsgObj = new MsgObjText();
+        pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
+        pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
 //        pChatMsg->mutable_objtext();
-//        pChatMsg->set_allocated_objtext(pMsgObj);
+        pChatMsg->set_allocated_objtext(pMsgObj);
         break;
     }
     case MOT_IMAGE:
     {
-        MsgObjImage* objImage = pChatMsg->mutable_objimage();
-       objImage->set_w(((MsgImage*)m_MsgObjBase)->w);
-       objImage->set_h(((MsgImage*)m_MsgObjBase)->h);
-       objImage->set_url(((MsgImage*)m_MsgObjBase)->url);
-       objImage->set_thumbnailurl(((MsgImage*)m_MsgObjBase)->thumbnailUrl);
+//        MsgObjImage* objImage = pChatMsg->mutable_objimage();
+//       objImage->set_w(((MsgImage*)m_MsgObjBase)->w);
+//       objImage->set_h(((MsgImage*)m_MsgObjBase)->h);
+//       objImage->set_url(((MsgImage*)m_MsgObjBase)->url);
+//       objImage->set_thumbnailurl(((MsgImage*)m_MsgObjBase)->thumbnailUrl);
 
-//        MsgObjImage * pMsgObj = new MsgObjImage();
-//        pMsgObj->set_w(((MsgImage*)m_MsgObjBase)->w);
-//        pMsgObj->set_h(((MsgImage*)m_MsgObjBase)->h);
-//        pMsgObj->set_h(((MsgImage*)m_MsgObjBase)->h);
-//        pMsgObj->set_url(((MsgImage*)m_MsgObjBase)->url);
-//        pMsgObj->set_thumbnailurl(((MsgImage*)m_MsgObjBase)->thumbnailUrl);
+        MsgObjImage * pMsgObj = new MsgObjImage();
+        pMsgObj->set_w(((MsgImage*)m_MsgObjBase)->w);
+        pMsgObj->set_h(((MsgImage*)m_MsgObjBase)->h);
+        pMsgObj->set_h(((MsgImage*)m_MsgObjBase)->h);
+        pMsgObj->set_url(((MsgImage*)m_MsgObjBase)->url);
+        pMsgObj->set_thumbnailurl(((MsgImage*)m_MsgObjBase)->thumbnailUrl);
 //        pChatMsg->mutable_objimage();
-//        pChatMsg->set_allocated_objimage(pMsgObj);
+        pChatMsg->set_allocated_objimage(pMsgObj);
         break;
     }
     default:
@@ -243,6 +243,8 @@ int CChatMsgSend::Pack(uint8* pBuf, int32& dwSize)
 
     p += nRet;
     dwSize = m_dwLen = (int32)(p - pBuf);
+
+
     UpdateLen(pBuf, dwSize);
     Logger.Log(ERROR, "CChatMsgSend::Pack(out)");
 

@@ -150,6 +150,10 @@ int CMsgUserLogin::Pack(uint8* pBuf, int32& dwSize)
     p += nRet;
     dwSize = m_dwLen = (int32)(p - pBuf);
     UpdateLen(pBuf, dwSize);
+    if(NULL != pUserLogin){
+        delete pUserLogin;
+        pUserLogin = NULL;
+    }
     Logger.Log(INFO, "CMsgUserLogin::Pack(out)");
 
     return ERR_SUCCESS;

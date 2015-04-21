@@ -65,7 +65,7 @@ int TestCase::GroupMsgSend(CLIENT_INFO_T* userClient){
             pCChatMsgSend->m_dwObjType = MOT_TEXT;
             pCChatMsgSend->m_sendtime = time(0);
             pCChatMsgSend->m_MsgObjBase = msgText;
-            pCChatMsgSend->m_msgId = 12458;
+            pCChatMsgSend->m_msgId = 780;
 //            pCChatMsgSend->m_msgId  = (tv.tv_sec * 1000000 + tv.tv_usec);
 
             Logger.Log(INFO, "TestCase::GroupMsgSend2222");

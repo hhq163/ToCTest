@@ -83,7 +83,7 @@ int CMsgBase::NewMsgFromBuf(uint8* pBuf, int32 &dwSize, CMsgBase** ppOutMsg)
         return ERR_NO_MORE_DATA;
     }
 
-    //Logger.Log(ERROR, "parse data,ver:0x%04x, cmd:0x%04x, len:%d, size:%d dwDesUid[%lld]",wVer, wCmd, dwLen, dwSize,dwDesUid);
+    //Logger.Log(ERROR, "parse data,ver:0x%04x, cmd:0x%04x, len:%d, size:%d dwId[%d]",wVer, wCmd, dwLen, dwSize,dwId);
     *ppOutMsg = CMsgBase::NewMsg(wCmd);
     if (NULL == *ppOutMsg)
     {
@@ -128,7 +128,7 @@ int CMsgBase::GetBufFromMsg(uint8* pBuf, int32 &dwSize, CMsgBase* pInMsg)
 
     if (dwSize < (int32)pInMsg->m_dwLen)
     {
-        Logger.Log(ERROR, "pack data, the buffer size:%d is less than the msg size:%d, cmd:[0x%04x]  m_llDesUid:%lld ",\
+        Logger.Log(ERROR, "pack data, the buffer size:%d is less than the msg size:%d, cmd:[0x%04x]  m_llDesUid:%d ",\
             dwSize, pInMsg->m_dwLen, pInMsg->m_wCmd, pInMsg->m_dwId);
 
         return ERR_NO_MORE_SPACE;
@@ -214,6 +214,7 @@ CMsgBase* CMsgBase::NewMsg(uint16 wCmd)
     case CMD_MSG_GROUP_SEND_ACK:
     case CMD_MSG_GROUP_RECV_ACK:
     case CMD_MSG_NOTIF_ACK:
+    case CMD_GROUP_MEMBER_ADD_ACK:
         pMsg = new CMsgBaseAck();
         break;
 
