@@ -24,6 +24,7 @@ TestCase::~TestCase() {
  */
 int TestCase::UserLogin(CLIENT_INFO_T* userClient){
     cout << "YTestCase::UserLogin (in) \n" << endl;
+
     int ret = 0;
 
     CMsgUserLogin *pCMsgUserLogin = (CMsgUserLogin*)CMsgBase::NewMsg(CMD_USER_LOGIN);
