@@ -133,12 +133,12 @@ const uint16 CMD_UNKNOW = 0x0FFF; //未知命令字
 #define ENCRYPT_BASE64  0x0001  //BASE64加密
 
 
-#define SERVER_IP     "192.168.1.156"
+#define SERVER_IP     "192.168.1.55"
 #define SERVER_PORT     8200
 
 #define CLIENT_IP      "127.0.0.1"
-#define CLIENT_PORT     6505
-#define USER_ID         10086
+#define CLIENT_PORT     6500
+#define USER_ID         10186
 #define GROUP_ID        68
 
 enum IO_TYPE
