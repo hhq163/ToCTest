@@ -55,6 +55,8 @@ struct StaticDescriptorInitializer_GroupUserAdd_2eproto {
 
 #ifndef _MSC_VER
 const int GroupUserAdd::kUidFieldNumber;
+const int GroupUserAdd::kContentFieldNumber;
+const int GroupUserAdd::kSyncKeyFieldNumber;
 #endif  // !_MSC_VER
 
 GroupUserAdd::GroupUserAdd()
@@ -74,7 +76,10 @@ GroupUserAdd::GroupUserAdd(const GroupUserAdd& from)
 }
 
 void GroupUserAdd::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
+  content_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  synckey_ = GOOGLE_LONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -84,6 +89,9 @@ GroupUserAdd::~GroupUserAdd() {
 }
 
 void GroupUserAdd::SharedDtor() {
+  if (content_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete content_;
+  }
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   if (this != &default_instance()) {
   #else
@@ -113,6 +121,14 @@ GroupUserAdd* GroupUserAdd::New() const {
 }
 
 void GroupUserAdd::Clear() {
+  if (_has_bits_[0 / 32] & 6) {
+    if (has_content()) {
+      if (content_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        content_->clear();
+      }
+    }
+    synckey_ = GOOGLE_LONGLONG(0);
+  }
   uid_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->clear();
@@ -132,21 +148,49 @@ bool GroupUserAdd::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated int32 uid = 2;
-      case 2: {
-        if (tag == 16) {
+      // repeated int32 uid = 1;
+      case 1: {
+        if (tag == 8) {
          parse_uid:
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 1, 16, input, this->mutable_uid())));
-        } else if (tag == 18) {
+                 1, 8, input, this->mutable_uid())));
+        } else if (tag == 10) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, this->mutable_uid())));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_uid;
+        if (input->ExpectTag(8)) goto parse_uid;
+        if (input->ExpectTag(18)) goto parse_content;
+        break;
+      }
+
+      // optional string content = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_content:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_content()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_syncKey;
+        break;
+      }
+
+      // optional int64 syncKey = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_syncKey:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &synckey_)));
+          set_has_synckey();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -176,10 +220,21 @@ failure:
 void GroupUserAdd::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:yunquan.GroupUserAdd)
-  // repeated int32 uid = 2;
+  // repeated int32 uid = 1;
   for (int i = 0; i < this->uid_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(
-      2, this->uid(i), output);
+      1, this->uid(i), output);
+  }
+
+  // optional string content = 2;
+  if (has_content()) {
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->content(), output);
+  }
+
+  // optional int64 syncKey = 3;
+  if (has_synckey()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->synckey(), output);
   }
 
   output->WriteRaw(unknown_fields().data(),
@@ -190,7 +245,23 @@ void GroupUserAdd::SerializeWithCachedSizes(
 int GroupUserAdd::ByteSize() const {
   int total_size = 0;
 
-  // repeated int32 uid = 2;
+  if (_has_bits_[1 / 32] & (0xffu << (1 % 32))) {
+    // optional string content = 2;
+    if (has_content()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->content());
+    }
+
+    // optional int64 syncKey = 3;
+    if (has_synckey()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->synckey());
+    }
+
+  }
+  // repeated int32 uid = 1;
   {
     int data_size = 0;
     for (int i = 0; i < this->uid_size(); i++) {
@@ -216,6 +287,14 @@ void GroupUserAdd::CheckTypeAndMergeFrom(
 void GroupUserAdd::MergeFrom(const GroupUserAdd& from) {
   GOOGLE_CHECK_NE(&from, this);
   uid_.MergeFrom(from.uid_);
+  if (from._has_bits_[1 / 32] & (0xffu << (1 % 32))) {
+    if (from.has_content()) {
+      set_content(from.content());
+    }
+    if (from.has_synckey()) {
+      set_synckey(from.synckey());
+    }
+  }
   mutable_unknown_fields()->append(from.unknown_fields());
 }
 
@@ -233,6 +312,8 @@ bool GroupUserAdd::IsInitialized() const {
 void GroupUserAdd::Swap(GroupUserAdd* other) {
   if (other != this) {
     uid_.Swap(&other->uid_);
+    std::swap(content_, other->content_);
+    std::swap(synckey_, other->synckey_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.swap(other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

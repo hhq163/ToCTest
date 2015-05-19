@@ -1,29 +1,30 @@
 /*
- * CCSGroupUserListGetAckAck.cpp
+ * CCSGroupUserListAckAck.cpp
  *
  *  Created on: 2015年4月9日
  *      Author: hhq163
  */
 
+
 #include "Common.h"
 #include "Log.h"
-#include "GroupUserListGetAck.pb.h"
-#include "CCSGroupUserListGetAck.h"
+#include "GroupUserListAck.pb.h"
+#include "CCSGroupUserListAck.h"
 
-CCSGroupUserListGetAck::CCSGroupUserListGetAck() {
+CCSGroupUserListAck::CCSGroupUserListAck() {
     // TODO Auto-generated constructor stub
 
 }
 
-CCSGroupUserListGetAck::~CCSGroupUserListGetAck() {
+CCSGroupUserListAck::~CCSGroupUserListAck() {
     // TODO Auto-generated destructor stub
 }
 
-int CCSGroupUserListGetAck::Parse(uint8* pBuf, int32& dwSize)
+int CCSGroupUserListAck::Parse(uint8* pBuf, int32& dwSize)
 {
     uint8* p = pBuf;
     int32 dwUsedSize = dwSize;
-    Logger.Log(INFO, "CCSGroupUserListGetAck::Parse(in)");
+    Logger.Log(INFO, "CCSGroupUserListAck::Parse(in)");
 
     int iErr = CMsgBase::Parse(pBuf, dwUsedSize);
     if(ERR_SUCCESS != iErr)
@@ -57,19 +58,28 @@ int CCSGroupUserListGetAck::Parse(uint8* pBuf, int32& dwSize)
 //////////////////////////////////////////////////////////////////////////
     string strData(pdata, m_Buflen);
 
-    GroupUserListGetAck *pGroupUserListGet = new GroupUserListGetAck();
-    pGroupUserListGet->Clear();
+    GroupUserListAck *pGroupUserListAck = new GroupUserListAck();
+    pGroupUserListAck->Clear();
 
-    if (pGroupUserListGet->ParseFromString(strData))
+    if (pGroupUserListAck->ParseFromString(strData))
     {
-        if(pGroupUserListGet->has_sessionid())
+        if(pGroupUserListAck->has_result())
         {
-            m_dwSessionId = pGroupUserListGet->sessionid();
+            m_wRcode = pGroupUserListAck->result();
+        }
+
+        if(pGroupUserListAck->has_msg())
+        {
+            m_msg = pGroupUserListAck->msg();
+        }
+        if(pGroupUserListAck->has_sessionid())
+        {
+            m_dwSessionId = pGroupUserListAck->sessionid();
         }
         //解析uid
-        for(int i = 0; i < pGroupUserListGet->uid_size(); i++)
+        for(int i = 0; i < pGroupUserListAck->uid_size(); i++)
         {
-            const int32& uid = pGroupUserListGet->uid(i);
+            const int32& uid = pGroupUserListAck->uid(i);
             m_mapuidlist[i] = uid;
         }
 
@@ -93,13 +103,13 @@ int CCSGroupUserListGetAck::Parse(uint8* pBuf, int32& dwSize)
     p += m_Buflen;
 
     dwSize = (int32)(p - pBuf );
-    Logger.Log(ERROR, "CCSGroupUserListGetAck::Parse(out)");
+    Logger.Log(ERROR, "CCSGroupUserListAck::Parse(out)");
     return ERR_SUCCESS;
 
 }
 
 
-int CCSGroupUserListGetAck::Pack(uint8* pBuf, int32& dwSize)
+int CCSGroupUserListAck::Pack(uint8* pBuf, int32& dwSize)
 {
     uint8* p = pBuf;
     int32 dwUsedSize = dwSize;
@@ -113,17 +123,25 @@ int CCSGroupUserListGetAck::Pack(uint8* pBuf, int32& dwSize)
 ////////////////////////////////////////////////////////////////
     /*  ProtocolBuffer pack */
 
-    GroupUserListGetAck *pGroupUserListGet = new GroupUserListGetAck();
-    pGroupUserListGet->Clear();
+    GroupUserListAck *pGroupUserListAck = new GroupUserListAck();
+    pGroupUserListAck->Clear();
 
-    pGroupUserListGet->set_sessionid(m_dwSessionId);
+    pGroupUserListAck->set_result((E_RESULT)m_wRcode);
+    pGroupUserListAck->set_msg(m_msg);
+
+    /* Internal use */
+    if( m_wCmd & CMD_INNER_FLAGE )
+    {
+        pGroupUserListAck->set_sessionid(m_dwSessionId);
+    }
+
     for(int i = 0; i < m_mapuidlist.size(); i++)
     {
-        pGroupUserListGet->add_uid(m_mapuidlist[i]);
+        pGroupUserListAck->add_uid(m_mapuidlist[i]);
     }
 
     string buff = "";
-    pGroupUserListGet->SerializeToString(&buff);
+    pGroupUserListAck->SerializeToString(&buff);
 
 ///////////////////////////////////////////////////////////
     if( dwSize < dwUsedSize + (int)buff.size())
@@ -141,7 +159,7 @@ int CCSGroupUserListGetAck::Pack(uint8* pBuf, int32& dwSize)
     p += nRet;
     dwSize = m_dwLen = (int32)(p - pBuf);
     UpdateLen(pBuf, dwSize);
-    Logger.Log(INFO, "CCSGroupUserListGetAck::Pack(out)");
+    Logger.Log(INFO, "CCSGroupUserListAck::Pack(out)");
 
     return ERR_SUCCESS;
 }

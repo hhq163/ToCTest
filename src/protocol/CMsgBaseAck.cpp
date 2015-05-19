@@ -110,8 +110,12 @@ int CMsgBaseAck::Pack(uint8* pBuf, int32& dwSize)
 
     pAck->set_result((E_RESULT)m_wRcode);
     pAck->set_msg(m_msg);
-    pAck->set_sessionid(m_dwSessionId);
 
+    /* Internal use */
+    if( m_wCmd & CMD_INNER_FLAGE )
+    {
+        pAck->set_sessionid(m_dwSessionId);
+    }
     string buff = "";
     pAck->SerializeToString(&buff);
 

@@ -23,11 +23,11 @@ protected:
 public:
 
     uint32 m_dwFromUid;
-    uint64 m_llMsgId;
     time_t m_sendtime;
     uint32 m_dwObjType;
     MsgObjBase* m_MsgObjBase;
     string      m_txt;
+    uint64 m_llSyncKey;
 };
 
 #endif /* _PROTOCOL_CCHAT_MSG_RECV_H_ */

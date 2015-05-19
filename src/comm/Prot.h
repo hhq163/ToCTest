@@ -2,10 +2,10 @@
 #define _PROTOCOL_H_
 
 #include "Common.h"
+#include "Struct.h"
 #include "base64.h"
 
 #include "Common.pb.h"
-#include "Structs.h"
 using namespace yunquan;
 
 #include "CMsgBase.h"
@@ -16,6 +16,8 @@ using namespace yunquan;
 
 #include "CMsgUserLogin.h"
 #include "CMsgUserLoginAck.h"
+#include "CMsgUserLogout.h"
+#include "CMsgForceOffline.h"
 
 #include "CMsgModuleLogin.h"
 #include "CMsgModuleLoginAck.h"
@@ -23,14 +25,20 @@ using namespace yunquan;
 #include "CMsgHeartbeat.h"
 #include "CMsgHeartbeatAck.h"
 
-
+#include "CMsgSync.h"
+#include "CMsgPush.h"
+#include "CMsgNotify.h"
+#include "CMsgNotifyAck.h"
 #include "CChatMsgSend.h"
 #include "CChatMsgRecv.h"
 
 //群聊相关
 #include "CMsgNotify.h"
-#include "CCSGroupUserListGetAck.h"
-#include "CCSGroupUserListGet.h"
+#include "CCSGroupUserListAck.h"
+#include "CCSGroupUserListRequest.h"
 #include "CCSGroupUserAdd.h"
+#include "CGroupUserChange.h"
+
+#include "CMsgActivityRoom.h"
 
 #endif

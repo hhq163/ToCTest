@@ -9,7 +9,10 @@
 CChatMsgSend::CChatMsgSend()
 {
     m_dwFromUid = 0;
+    m_msgId = 0;
+    m_sendtime = 0;
     m_dwObjType = 0;
+    m_llSyncKey = 0;
 }
 
 CChatMsgSend::~CChatMsgSend()
@@ -30,7 +33,7 @@ int CChatMsgSend::Parse(uint8* pBuf, int32& dwSize)
         return iErr;
     }
     p += dwUsedSize;
-
+    m_pprotoBuf = (char *)p;
 
     m_Buflen = m_dwLen - dwUsedSize;
     if( m_Buflen > MAX_BUFFER_SIZE )
@@ -48,7 +51,7 @@ int CChatMsgSend::Parse(uint8* pBuf, int32& dwSize)
     char* pdata = NULL;
     if( 0 > ( nRet = CMsgBase::Decrypt((const char*)p, m_dwLen - dwUsedSize, pdata, m_Buflen)))
     {
-        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%lld Decrypt failed", m_wCmd, m_dwId);
+        Logger.Log(ERROR, "cmd:[0x%04x] uid:[%u] Decrypt failed", m_wCmd, m_dwId);
         return ERR_FAILED;
     }
     CHECK_IF_NULL(pdata);
@@ -76,6 +79,19 @@ int CChatMsgSend::Parse(uint8* pBuf, int32& dwSize)
         if(pChatMsg->has_type())
         {
             m_dwObjType = pChatMsg->type();
+        }
+
+        if(pChatMsg->has_name())
+        {
+            m_srcName = pChatMsg->name();
+        }
+        if(pChatMsg->has_sessionid())
+        {
+            m_dwSessionId = pChatMsg->sessionid();
+        }
+        if(pChatMsg->has_synckey())
+        {
+            m_llSyncKey = pChatMsg->synckey();
         }
 
         switch(pChatMsg->type())
@@ -122,10 +138,10 @@ int CChatMsgSend::Parse(uint8* pBuf, int32& dwSize)
             break;
         }
 
-        Logger.Log(INFO, "cmd:[0x%04x] m_dwDesUid:[%lld] m_dwSessionId:[%d]", \
+        Logger.Log(INFO, "cmd:[0x%04x] m_dwDesUid:[%u] m_dwSessionId:[%d]", \
             m_wCmd, m_dwId, m_dwSessionId);
 
-        /*        Internal use            */
+        /* Internal use */
         if( m_wCmd & CMD_INNER_FLAGE )
         {
 
@@ -134,7 +150,7 @@ int CChatMsgSend::Parse(uint8* pBuf, int32& dwSize)
     }
     else
     {
-        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%lld Json parse  failed", m_wCmd, m_dwId);
+        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%lld proto parse  failed", m_wCmd, m_dwId);
         return ERR_FAILED;
     }
 //////////////////////////////////////////////////////////////////////////
@@ -164,21 +180,29 @@ int CChatMsgSend::Pack(uint8* pBuf, int32& dwSize)
 
     ChatMsg *pChatMsg = new ChatMsg();
     pChatMsg->Clear();
-    Logger.Log(ERROR, "111");
     pChatMsg->set_fromuid(m_dwFromUid);
     pChatMsg->set_msgid(m_msgId);
     pChatMsg->set_time(m_sendtime);
     pChatMsg->set_type((E_MSG_OBJECT_TYPE)m_dwObjType);
-    Logger.Log(ERROR, "222");
 
+
+    if( m_wCmd == CMD_MSG_P2P_RECV ) //单聊发送强转到单聊接收后数据有所不同
+    {
+        pChatMsg->set_synckey(m_llSyncKey);
+    }
+    else
+    {
+        pChatMsg->set_name(m_srcName);
+    }
+    if(m_dwSessionId != 0)
+    {
+        pChatMsg->set_sessionid(m_dwSessionId);
+    }
 
     switch(pChatMsg->type())
     {
     case MOT_SYSTEM:
     {
-//        MsgObjSystem* objSystem = pChatMsg->mutable_objsystem();
-//        objSystem->set_type(((MsgSystem*)m_MsgObjBase)->type);
-//        objSystem->set_msg(((MsgSystem*)m_MsgObjBase)->msg);
         MsgObjSystem * pMsgObj = new MsgObjSystem();
         pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
         pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
@@ -189,12 +213,6 @@ int CChatMsgSend::Pack(uint8* pBuf, int32& dwSize)
     }
     case MOT_TEXT:
     {
-//        Logger.Log(ERROR, "333");
-//        MsgObjText* objText = pChatMsg->mutable_objtext();
-//        objText->set_type(((MsgText*)m_MsgObjBase)->type);
-//        objText->set_msg(((MsgText*)m_MsgObjBase)->msg);
-//        Logger.Log(ERROR, "type:%d msg:%s", ((MsgSystem*)m_MsgObjBase)->type, ((MsgSystem*)m_MsgObjBase)->msg.c_str());
-
         MsgObjText * pMsgObj = new MsgObjText();
         pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
         pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
@@ -204,12 +222,6 @@ int CChatMsgSend::Pack(uint8* pBuf, int32& dwSize)
     }
     case MOT_IMAGE:
     {
-//        MsgObjImage* objImage = pChatMsg->mutable_objimage();
-//       objImage->set_w(((MsgImage*)m_MsgObjBase)->w);
-//       objImage->set_h(((MsgImage*)m_MsgObjBase)->h);
-//       objImage->set_url(((MsgImage*)m_MsgObjBase)->url);
-//       objImage->set_thumbnailurl(((MsgImage*)m_MsgObjBase)->thumbnailUrl);
-
         MsgObjImage * pMsgObj = new MsgObjImage();
         pMsgObj->set_w(((MsgImage*)m_MsgObjBase)->w);
         pMsgObj->set_h(((MsgImage*)m_MsgObjBase)->h);
@@ -233,7 +245,6 @@ int CChatMsgSend::Pack(uint8* pBuf, int32& dwSize)
     {
         return ERR_NO_MORE_DATA;
     }
-
     int nRet = 0;
     if( 0 > ( nRet = CMsgBase::Encrypt((const char*)buff.c_str(), (uint32)buff.size(), (char*)p, dwSize-dwUsedSize )))
     {
@@ -242,11 +253,16 @@ int CChatMsgSend::Pack(uint8* pBuf, int32& dwSize)
     }
 
     p += nRet;
+
     dwSize = m_dwLen = (int32)(p - pBuf);
-
-
     UpdateLen(pBuf, dwSize);
-    Logger.Log(ERROR, "CChatMsgSend::Pack(out)");
+
+    if(NULL != pChatMsg){
+        delete pChatMsg;
+        pChatMsg = NULL;
+    }
+
+    Logger.Log(INFO, "CChatMsgSend::Pack(out)");
 
     return ERR_SUCCESS;
 }

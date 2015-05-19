@@ -97,10 +97,10 @@ class GroupUserAdd : public ::google::protobuf::MessageLite {
 
   // accessors -------------------------------------------------------
 
-  // repeated int32 uid = 2;
+  // repeated int32 uid = 1;
   inline int uid_size() const;
   inline void clear_uid();
-  static const int kUidFieldNumber = 2;
+  static const int kUidFieldNumber = 1;
   inline ::google::protobuf::int32 uid(int index) const;
   inline void set_uid(int index, ::google::protobuf::int32 value);
   inline void add_uid(::google::protobuf::int32 value);
@@ -109,14 +109,39 @@ class GroupUserAdd : public ::google::protobuf::MessageLite {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
       mutable_uid();
 
+  // optional string content = 2;
+  inline bool has_content() const;
+  inline void clear_content();
+  static const int kContentFieldNumber = 2;
+  inline const ::std::string& content() const;
+  inline void set_content(const ::std::string& value);
+  inline void set_content(const char* value);
+  inline void set_content(const char* value, size_t size);
+  inline ::std::string* mutable_content();
+  inline ::std::string* release_content();
+  inline void set_allocated_content(::std::string* content);
+
+  // optional int64 syncKey = 3;
+  inline bool has_synckey() const;
+  inline void clear_synckey();
+  static const int kSyncKeyFieldNumber = 3;
+  inline ::google::protobuf::int64 synckey() const;
+  inline void set_synckey(::google::protobuf::int64 value);
+
   // @@protoc_insertion_point(class_scope:yunquan.GroupUserAdd)
  private:
+  inline void set_has_content();
+  inline void clear_has_content();
+  inline void set_has_synckey();
+  inline void clear_has_synckey();
 
   ::std::string _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::RepeatedField< ::google::protobuf::int32 > uid_;
+  ::std::string* content_;
+  ::google::protobuf::int64 synckey_;
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_GroupUserAdd_2eproto_impl();
   #else
@@ -135,7 +160,7 @@ class GroupUserAdd : public ::google::protobuf::MessageLite {
 
 // GroupUserAdd
 
-// repeated int32 uid = 2;
+// repeated int32 uid = 1;
 inline int GroupUserAdd::uid_size() const {
   return uid_.size();
 }
@@ -163,6 +188,106 @@ inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
 GroupUserAdd::mutable_uid() {
   // @@protoc_insertion_point(field_mutable_list:yunquan.GroupUserAdd.uid)
   return &uid_;
+}
+
+// optional string content = 2;
+inline bool GroupUserAdd::has_content() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void GroupUserAdd::set_has_content() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void GroupUserAdd::clear_has_content() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void GroupUserAdd::clear_content() {
+  if (content_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    content_->clear();
+  }
+  clear_has_content();
+}
+inline const ::std::string& GroupUserAdd::content() const {
+  // @@protoc_insertion_point(field_get:yunquan.GroupUserAdd.content)
+  return *content_;
+}
+inline void GroupUserAdd::set_content(const ::std::string& value) {
+  set_has_content();
+  if (content_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    content_ = new ::std::string;
+  }
+  content_->assign(value);
+  // @@protoc_insertion_point(field_set:yunquan.GroupUserAdd.content)
+}
+inline void GroupUserAdd::set_content(const char* value) {
+  set_has_content();
+  if (content_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    content_ = new ::std::string;
+  }
+  content_->assign(value);
+  // @@protoc_insertion_point(field_set_char:yunquan.GroupUserAdd.content)
+}
+inline void GroupUserAdd::set_content(const char* value, size_t size) {
+  set_has_content();
+  if (content_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    content_ = new ::std::string;
+  }
+  content_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:yunquan.GroupUserAdd.content)
+}
+inline ::std::string* GroupUserAdd::mutable_content() {
+  set_has_content();
+  if (content_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    content_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:yunquan.GroupUserAdd.content)
+  return content_;
+}
+inline ::std::string* GroupUserAdd::release_content() {
+  clear_has_content();
+  if (content_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = content_;
+    content_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void GroupUserAdd::set_allocated_content(::std::string* content) {
+  if (content_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete content_;
+  }
+  if (content) {
+    set_has_content();
+    content_ = content;
+  } else {
+    clear_has_content();
+    content_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:yunquan.GroupUserAdd.content)
+}
+
+// optional int64 syncKey = 3;
+inline bool GroupUserAdd::has_synckey() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void GroupUserAdd::set_has_synckey() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void GroupUserAdd::clear_has_synckey() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void GroupUserAdd::clear_synckey() {
+  synckey_ = GOOGLE_LONGLONG(0);
+  clear_has_synckey();
+}
+inline ::google::protobuf::int64 GroupUserAdd::synckey() const {
+  // @@protoc_insertion_point(field_get:yunquan.GroupUserAdd.syncKey)
+  return synckey_;
+}
+inline void GroupUserAdd::set_synckey(::google::protobuf::int64 value) {
+  set_has_synckey();
+  synckey_ = value;
+  // @@protoc_insertion_point(field_set:yunquan.GroupUserAdd.syncKey)
 }
 
 

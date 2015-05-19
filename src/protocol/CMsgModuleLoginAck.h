@@ -22,11 +22,8 @@ protected:
     virtual int Pack(uint8* pBuf, int32& dwSize);
 
 public:
-    uint32  m_dwSrcUid;//源服务器ID
+    uint32  m_dwSrcMid;//源服务器ID
     uint16  m_wRcode;//返回码
-    uint16  m_wCount;
-
-    vector<MODULE_INFO_t>   m_vecModuleInfo;
 };
 
 #endif

@@ -16,7 +16,7 @@ protected:
     virtual int Pack(uint8* pBuf, int32& dwSize);
 
 public:
-
+    string m_name;//姓名
 };
 
 #endif

@@ -54,9 +54,10 @@ struct StaticDescriptorInitializer_UserLoginAck_2eproto {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int UserLoginAck::kSessionIdFieldNumber;
 const int UserLoginAck::kResultFieldNumber;
 const int UserLoginAck::kMsgFieldNumber;
+const int UserLoginAck::kSessionIdFieldNumber;
+const int UserLoginAck::kNameFieldNumber;
 #endif  // !_MSC_VER
 
 UserLoginAck::UserLoginAck()
@@ -78,9 +79,10 @@ UserLoginAck::UserLoginAck(const UserLoginAck& from)
 void UserLoginAck::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
-  sessionid_ = 0;
   result_ = 0;
   msg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  sessionid_ = 0;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -92,6 +94,9 @@ UserLoginAck::~UserLoginAck() {
 void UserLoginAck::SharedDtor() {
   if (msg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete msg_;
+  }
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
   }
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   if (this != &default_instance()) {
@@ -132,11 +137,16 @@ void UserLoginAck::Clear() {
     ::memset(&first, 0, n);                                \
   } while (0)
 
-  if (_has_bits_[0 / 32] & 7) {
-    ZR_(sessionid_, result_);
+  if (_has_bits_[0 / 32] & 15) {
+    ZR_(result_, sessionid_);
     if (has_msg()) {
       if (msg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         msg_->clear();
+      }
+    }
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        name_->clear();
       }
     }
   }
@@ -162,24 +172,9 @@ bool UserLoginAck::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 sessionId = 1;
+      // required int32 result = 1;
       case 1: {
         if (tag == 8) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &sessionid_)));
-          set_has_sessionid();
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(16)) goto parse_result;
-        break;
-      }
-
-      // required int32 result = 2;
-      case 2: {
-        if (tag == 16) {
-         parse_result:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &result_)));
@@ -187,16 +182,44 @@ bool UserLoginAck::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(26)) goto parse_msg;
+        if (input->ExpectTag(18)) goto parse_msg;
         break;
       }
 
-      // optional string msg = 3;
-      case 3: {
-        if (tag == 26) {
+      // optional string msg = 2;
+      case 2: {
+        if (tag == 18) {
          parse_msg:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_msg()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_sessionId;
+        break;
+      }
+
+      // optional int32 sessionId = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_sessionId:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &sessionid_)));
+          set_has_sessionid();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_name;
+        break;
+      }
+
+      // required string name = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
         } else {
           goto handle_unusual;
         }
@@ -229,20 +252,26 @@ failure:
 void UserLoginAck::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:yunquan.UserLoginAck)
-  // required int32 sessionId = 1;
-  if (has_sessionid()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->sessionid(), output);
-  }
-
-  // required int32 result = 2;
+  // required int32 result = 1;
   if (has_result()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->result(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
   }
 
-  // optional string msg = 3;
+  // optional string msg = 2;
   if (has_msg()) {
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      3, this->msg(), output);
+      2, this->msg(), output);
+  }
+
+  // optional int32 sessionId = 3;
+  if (has_sessionid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->sessionid(), output);
+  }
+
+  // required string name = 4;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      4, this->name(), output);
   }
 
   output->WriteRaw(unknown_fields().data(),
@@ -254,25 +283,32 @@ int UserLoginAck::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 sessionId = 1;
-    if (has_sessionid()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->sessionid());
-    }
-
-    // required int32 result = 2;
+    // required int32 result = 1;
     if (has_result()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->result());
     }
 
-    // optional string msg = 3;
+    // optional string msg = 2;
     if (has_msg()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->msg());
+    }
+
+    // optional int32 sessionId = 3;
+    if (has_sessionid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->sessionid());
+    }
+
+    // required string name = 4;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
     }
 
   }
@@ -292,14 +328,17 @@ void UserLoginAck::CheckTypeAndMergeFrom(
 void UserLoginAck::MergeFrom(const UserLoginAck& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_sessionid()) {
-      set_sessionid(from.sessionid());
-    }
     if (from.has_result()) {
       set_result(from.result());
     }
     if (from.has_msg()) {
       set_msg(from.msg());
+    }
+    if (from.has_sessionid()) {
+      set_sessionid(from.sessionid());
+    }
+    if (from.has_name()) {
+      set_name(from.name());
     }
   }
   mutable_unknown_fields()->append(from.unknown_fields());
@@ -312,16 +351,17 @@ void UserLoginAck::CopyFrom(const UserLoginAck& from) {
 }
 
 bool UserLoginAck::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000009) != 0x00000009) return false;
 
   return true;
 }
 
 void UserLoginAck::Swap(UserLoginAck* other) {
   if (other != this) {
-    std::swap(sessionid_, other->sessionid_);
     std::swap(result_, other->result_);
     std::swap(msg_, other->msg_);
+    std::swap(sessionid_, other->sessionid_);
+    std::swap(name_, other->name_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.swap(other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

@@ -19,7 +19,8 @@ protected:
     virtual int Pack(uint8* pBuf, int32& dwSize);
 
 public:
-    MODULE_INFO_t m_stModuleInfo;
+    uint32  m_dwMid;  //模块ID
+    uint16  m_wType;  //模块文字标识
 };
 
 #endif

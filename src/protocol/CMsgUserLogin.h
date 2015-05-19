@@ -14,7 +14,6 @@ public:
 protected:
 	virtual int Parse(uint8* pBuf, int32& dwSize);
 	virtual int Pack(uint8* pBuf, int32& dwSize);
-
 public:
 	uint16  m_wClientType;//客户端类型
 	string  m_ClientId; //客户端ID,非uid

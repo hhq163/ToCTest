@@ -23,6 +23,8 @@ protected:
 
 public:
     map<uint64,uint64>  m_mapuidlist;
+    string m_content;  //提醒方案
+    uint64 m_llSyncKey;//同步key
 };
 
 #endif /* SRC_PROTOCOL_CCSGROUPUSERADD_H_ */

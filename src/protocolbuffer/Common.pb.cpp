@@ -84,6 +84,12 @@ bool CMD_IsValid(int value) {
     case 520:
     case 521:
     case 522:
+    case 769:
+    case 770:
+    case 771:
+    case 772:
+    case 773:
+    case 774:
     case 1025:
     case 1026:
     case 1027:
@@ -158,6 +164,27 @@ bool E_NOTIF_TYPE_IsValid(int value) {
     case 1:
     case 2:
     case 3:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool SERVER_TYPE_IsValid(int value) {
+  switch(value) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
       return true;
     default:
       return false;

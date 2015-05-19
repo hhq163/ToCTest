@@ -62,11 +62,19 @@ int CCSGroupUserAdd::Parse(uint8* pBuf, int32& dwSize)
 
     if (pGroupUserAdd->ParseFromString(strData))
     {
+        if(pGroupUserAdd->has_content())
+        {
+            m_content = pGroupUserAdd->content();
+        }
         //解析uid
         for(int i = 0; i < pGroupUserAdd->uid_size(); i++)
         {
             const int32& uid = pGroupUserAdd->uid(i);
             m_mapuidlist[i] = uid;
+        }
+        if(pGroupUserAdd->has_synckey())
+        {
+            m_llSyncKey = pGroupUserAdd->synckey();
         }
 
         Logger.Log(INFO, "cmd:[0x%04x] m_dwDesUid:[%lld] m_dwSessionId:[%d]", \
@@ -112,6 +120,8 @@ int CCSGroupUserAdd::Pack(uint8* pBuf, int32& dwSize)
     GroupUserAdd *pGroupUserAdd = new GroupUserAdd();
     pGroupUserAdd->Clear();
 
+    pGroupUserAdd->set_content(m_content);
+    pGroupUserAdd->set_synckey(m_llSyncKey);
     for(int i = 0; i < m_mapuidlist.size(); i++)
     {
         pGroupUserAdd->add_uid(m_mapuidlist[i]);

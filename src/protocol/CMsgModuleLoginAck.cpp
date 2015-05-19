@@ -5,12 +5,13 @@
 
 #include "Common.h"
 #include "Log.h"
+#include "ModuleLoginAck.pb.h"
 #include "CMsgModuleLoginAck.h"
 
 CMsgModuleLoginAck::CMsgModuleLoginAck()
 {
-    m_wCount = 0;
-    m_dwSrcUid = 0;
+    m_dwSrcMid = 0;
+    m_wRcode = 0;
 }
 
 CMsgModuleLoginAck::~CMsgModuleLoginAck()
@@ -28,31 +29,58 @@ int CMsgModuleLoginAck::Parse(uint8* pBuf, int32& dwSize)
         return iErr;
     p += dwUsedSize;
 
-    m_wRcode = ntohs(*(uint16*)p);
-    p += 2;
-
-    if (RET_REDIRECT == m_wRcode)
+    m_Buflen = m_dwLen - dwUsedSize;
+    if( m_Buflen > MAX_BUFFER_SIZE )
     {
-        m_wCount = ntohs(*((uint16*)p));
-        p += 2;
-        for (uint16 i = 0; i < m_wCount; i++)
-        {
-            MODULE_INFO_t stModuleInfo = {0};
-            stModuleInfo.dwMid = ntohl(*((uint32*)p));
-            p += 4;
-            stModuleInfo.wType = ntohs(*((uint16*)p));
-            p += 2;
-            stModuleInfo.dwIp = ntohl(*((uint32*)p));
-            p += 4;
-            stModuleInfo.wPort = ntohs(*((uint16*)p));
-            p += 2;
-
-            m_vecModuleInfo.push_back(stModuleInfo);
-        }
+        Logger.Log(ERROR, "parse msg bodylen[%d] > MAX_BUFFER_SIZE[%d] ", m_Buflen, MAX_BUFFER_SIZE);
+        return ERR_FAILED;
+    }
+    if( m_dwLen > (uint32)dwSize )
+    {
+        return ERR_NO_MORE_DATA;
     }
 
-    dwSize = (int32)(p - pBuf);
+    /*        check if need  Decrypt , ver??    */
+    int nRet = 0;
+    char* pdata = NULL;
+    if( 0 > ( nRet = CMsgBase::Decrypt((const char*)p, m_dwLen - dwUsedSize, pdata, m_Buflen)))
+    {
+        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%lld Decrypt failed", m_wCmd, m_dwId);
+        return ERR_FAILED;
+    }
+    CHECK_IF_NULL(pdata);
 
+//////////////////////////////////////////////////////////////////////////
+    string strData(pdata, m_Buflen);
+
+    ModuleLoginAck *pModuleLoginAck = new ModuleLoginAck();
+    pModuleLoginAck->Clear();
+
+    if (pModuleLoginAck->ParseFromString(strData))
+    {
+        if(pModuleLoginAck->has_result())
+        {
+            m_wRcode = pModuleLoginAck->result();
+        }
+
+        if(pModuleLoginAck->has_srcmid())
+        {
+            m_dwSrcMid = pModuleLoginAck->srcmid();
+        }
+        Logger.Log(INFO, "cmd:[0x%04x] m_dwSrcMid:[%u] m_wRcode:[%d]", m_wCmd, m_dwSrcMid, m_wRcode);
+
+
+    }
+    else
+    {
+        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%lld proto parse  failed", m_wCmd, m_dwId);
+        return ERR_FAILED;
+    }
+//////////////////////////////////////////////////////////////////////////
+    p += m_Buflen;
+
+    dwSize = (int32)(p - pBuf );
+    Logger.Log(ERROR, "ModuleLoginAck::Parse(out)");
     return ERR_SUCCESS;
 }
 
@@ -65,38 +93,40 @@ int CMsgModuleLoginAck::Pack(uint8* pBuf, int32& dwSize)
         return iErr;
     p += dwUsedSize;
 
-    *(uint16*)p = htons(m_wRcode);
-    p += 2;
+////////////////////////////////////////////////////////////////
+    /*  ProtocolBuffer pack */
 
-    if (RET_REDIRECT == m_wRcode)
+    ModuleLoginAck *pModuleLoginAck = new ModuleLoginAck();
+    pModuleLoginAck->Clear();
+    pModuleLoginAck->set_result(m_wRcode);
+    pModuleLoginAck->set_srcmid(m_dwSrcMid);
+
+    string buff = "";
+    pModuleLoginAck->SerializeToString(&buff);
+
+///////////////////////////////////////////////////////////
+    if( dwSize < dwUsedSize + (int)buff.size())
     {
-        int32 dwBodyLen = m_wCount * sizeof(MODULE_INFO_t);
-        if(dwSize - dwUsedSize < dwBodyLen)
-        {
-            Logger.Log(ERROR, "pack data, the buffer size:%d dwBodyLen[%u] ",\
-                    dwSize, dwBodyLen);
-            return ERR_NO_MORE_SPACE;
-        }
-        *(uint16*)p = htons(m_wCount);
-        p += 2;
-
-
-        for (uint16 i = 0; i < m_wCount; i++)
-        {
-            *((uint32*)p) = htonl(m_vecModuleInfo[i].dwMid);
-            p += 4;
-            *((uint16*)p) = htons(m_vecModuleInfo[i].wType);
-            p += 2;
-            *((uint32*)p) = htonl(m_vecModuleInfo[i].dwIp);
-            p += 4;
-            *((uint16*)p) = htons(m_vecModuleInfo[i].wPort);
-            p += 2;
-        }
-
+        return ERR_NO_MORE_DATA;
     }
+    int nRet = 0;
+    if( 0 > ( nRet = CMsgBase::Encrypt((const char*)buff.c_str(), (uint32)buff.size(), (char*)p, dwSize-dwUsedSize )))
+    {
+        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%lld Encrypt failed", m_wCmd, m_dwId);
+        return ERR_FAILED;
+    }
+
+    p += nRet;
 
     dwSize = m_dwLen = (int32)(p - pBuf);
     UpdateLen(pBuf, dwSize);
+
+    if(NULL != pModuleLoginAck){
+        delete pModuleLoginAck;
+        pModuleLoginAck = NULL;
+    }
+
+    Logger.Log(INFO, "CModuleLoginAck::Pack(out)");
 
     return ERR_SUCCESS;
 }

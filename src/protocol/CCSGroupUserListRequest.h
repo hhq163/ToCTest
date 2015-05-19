@@ -1,5 +1,5 @@
 /*
- * CCSGroupUserListGet.h
+ * CCSGroupUserListRequest.h
  *
  *  Created on: 2015年4月9日
  *      Author: hhq163
@@ -13,10 +13,10 @@
 /*
  *
  */
-class CCSGroupUserListGet : public CMsgBase{
+class CCSGroupUserListRequest : public CMsgBase{
 public:
-    CCSGroupUserListGet();
-    virtual ~CCSGroupUserListGet();
+    CCSGroupUserListRequest();
+    virtual ~CCSGroupUserListRequest();
 
 protected:
     virtual int Parse(uint8* pBuf, int32& dwSize);

@@ -58,7 +58,10 @@ struct StaticDescriptorInitializer_ChatMsg_2eproto {
 const int ChatMsg::kFromUidFieldNumber;
 const int ChatMsg::kMsgidFieldNumber;
 const int ChatMsg::kTimeFieldNumber;
+const int ChatMsg::kSyncKeyFieldNumber;
 const int ChatMsg::kTypeFieldNumber;
+const int ChatMsg::kNameFieldNumber;
+const int ChatMsg::kSessionIdFieldNumber;
 const int ChatMsg::kObjSystemFieldNumber;
 const int ChatMsg::kObjTextFieldNumber;
 const int ChatMsg::kObjImageFieldNumber;
@@ -85,11 +88,15 @@ ChatMsg::ChatMsg(const ChatMsg& from)
 }
 
 void ChatMsg::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   fromuid_ = 0u;
   msgid_ = GOOGLE_ULONGLONG(0);
   time_ = 0u;
+  synckey_ = GOOGLE_LONGLONG(0);
   type_ = 0;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  sessionid_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   clear_has_msgObjectOneof();
 }
@@ -100,6 +107,9 @@ ChatMsg::~ChatMsg() {
 }
 
 void ChatMsg::SharedDtor() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
   if (has_msgObjectOneof()) {
     clear_msgObjectOneof();
   }
@@ -180,7 +190,15 @@ void ChatMsg::Clear() {
     ::memset(&first, 0, n);                                \
   } while (0)
 
-  ZR_(msgid_, type_);
+  if (_has_bits_[0 / 32] & 127) {
+    ZR_(msgid_, synckey_);
+    ZR_(type_, sessionid_);
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        name_->clear();
+      }
+    }
+  }
 
 #undef OFFSET_OF_FIELD_
 #undef ZR_
@@ -244,13 +262,28 @@ bool ChatMsg::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(32)) goto parse_Type;
+        if (input->ExpectTag(32)) goto parse_syncKey;
         break;
       }
 
-      // required .yunquan.E_MSG_OBJECT_TYPE Type = 4;
+      // optional int64 syncKey = 4;
       case 4: {
         if (tag == 32) {
+         parse_syncKey:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &synckey_)));
+          set_has_synckey();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(40)) goto parse_Type;
+        break;
+      }
+
+      // required .yunquan.E_MSG_OBJECT_TYPE Type = 5;
+      case 5: {
+        if (tag == 40) {
          parse_Type:
           int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
@@ -265,94 +298,122 @@ bool ChatMsg::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(42)) goto parse_objSystem;
+        if (input->ExpectTag(50)) goto parse_objSystem;
         break;
       }
 
-      // optional .yunquan.MsgObjSystem objSystem = 5;
-      case 5: {
-        if (tag == 42) {
+      // optional .yunquan.MsgObjSystem objSystem = 6;
+      case 6: {
+        if (tag == 50) {
          parse_objSystem:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_objsystem()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(50)) goto parse_objText;
+        if (input->ExpectTag(58)) goto parse_objText;
         break;
       }
 
-      // optional .yunquan.MsgObjText objText = 6;
-      case 6: {
-        if (tag == 50) {
+      // optional .yunquan.MsgObjText objText = 7;
+      case 7: {
+        if (tag == 58) {
          parse_objText:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_objtext()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(58)) goto parse_objImage;
+        if (input->ExpectTag(66)) goto parse_objImage;
         break;
       }
 
-      // optional .yunquan.MsgObjImage objImage = 7;
-      case 7: {
-        if (tag == 58) {
+      // optional .yunquan.MsgObjImage objImage = 8;
+      case 8: {
+        if (tag == 66) {
          parse_objImage:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_objimage()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(66)) goto parse_objVoice;
+        if (input->ExpectTag(74)) goto parse_objVoice;
         break;
       }
 
-      // optional .yunquan.MsgObjVoice objVoice = 8;
-      case 8: {
-        if (tag == 66) {
+      // optional .yunquan.MsgObjVoice objVoice = 9;
+      case 9: {
+        if (tag == 74) {
          parse_objVoice:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_objvoice()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(74)) goto parse_objVideo;
+        if (input->ExpectTag(82)) goto parse_objVideo;
         break;
       }
 
-      // optional .yunquan.MsgObjVideo objVideo = 9;
-      case 9: {
-        if (tag == 74) {
+      // optional .yunquan.MsgObjVideo objVideo = 10;
+      case 10: {
+        if (tag == 82) {
          parse_objVideo:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_objvideo()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(82)) goto parse_objLink;
+        if (input->ExpectTag(90)) goto parse_objLink;
         break;
       }
 
-      // optional .yunquan.MsgObjLink objLink = 10;
-      case 10: {
-        if (tag == 82) {
+      // optional .yunquan.MsgObjLink objLink = 11;
+      case 11: {
+        if (tag == 90) {
          parse_objLink:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_objlink()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(90)) goto parse_objCard;
+        if (input->ExpectTag(98)) goto parse_objCard;
         break;
       }
 
-      // optional .yunquan.MsgObjCard objCard = 11;
-      case 11: {
-        if (tag == 90) {
+      // optional .yunquan.MsgObjCard objCard = 12;
+      case 12: {
+        if (tag == 98) {
          parse_objCard:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_objcard()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(106)) goto parse_name;
+        break;
+      }
+
+      // optional string name = 13;
+      case 13: {
+        if (tag == 106) {
+         parse_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(112)) goto parse_sessionId;
+        break;
+      }
+
+      // optional uint32 sessionId = 14;
+      case 14: {
+        if (tag == 112) {
+         parse_sessionId:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &sessionid_)));
+          set_has_sessionid();
         } else {
           goto handle_unusual;
         }
@@ -400,52 +461,68 @@ void ChatMsg::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->time(), output);
   }
 
-  // required .yunquan.E_MSG_OBJECT_TYPE Type = 4;
+  // optional int64 syncKey = 4;
+  if (has_synckey()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(4, this->synckey(), output);
+  }
+
+  // required .yunquan.E_MSG_OBJECT_TYPE Type = 5;
   if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
-      4, this->type(), output);
+      5, this->type(), output);
   }
 
-  // optional .yunquan.MsgObjSystem objSystem = 5;
+  // optional .yunquan.MsgObjSystem objSystem = 6;
   if (has_objsystem()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
-      5, this->objsystem(), output);
+      6, this->objsystem(), output);
   }
 
-  // optional .yunquan.MsgObjText objText = 6;
+  // optional .yunquan.MsgObjText objText = 7;
   if (has_objtext()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
-      6, this->objtext(), output);
+      7, this->objtext(), output);
   }
 
-  // optional .yunquan.MsgObjImage objImage = 7;
+  // optional .yunquan.MsgObjImage objImage = 8;
   if (has_objimage()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
-      7, this->objimage(), output);
+      8, this->objimage(), output);
   }
 
-  // optional .yunquan.MsgObjVoice objVoice = 8;
+  // optional .yunquan.MsgObjVoice objVoice = 9;
   if (has_objvoice()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
-      8, this->objvoice(), output);
+      9, this->objvoice(), output);
   }
 
-  // optional .yunquan.MsgObjVideo objVideo = 9;
+  // optional .yunquan.MsgObjVideo objVideo = 10;
   if (has_objvideo()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
-      9, this->objvideo(), output);
+      10, this->objvideo(), output);
   }
 
-  // optional .yunquan.MsgObjLink objLink = 10;
+  // optional .yunquan.MsgObjLink objLink = 11;
   if (has_objlink()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
-      10, this->objlink(), output);
+      11, this->objlink(), output);
   }
 
-  // optional .yunquan.MsgObjCard objCard = 11;
+  // optional .yunquan.MsgObjCard objCard = 12;
   if (has_objcard()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessage(
-      11, this->objcard(), output);
+      12, this->objcard(), output);
+  }
+
+  // optional string name = 13;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      13, this->name(), output);
+  }
+
+  // optional uint32 sessionId = 14;
+  if (has_sessionid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(14, this->sessionid(), output);
   }
 
   output->WriteRaw(unknown_fields().data(),
@@ -478,57 +555,78 @@ int ChatMsg::ByteSize() const {
           this->time());
     }
 
-    // required .yunquan.E_MSG_OBJECT_TYPE Type = 4;
+    // optional int64 syncKey = 4;
+    if (has_synckey()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->synckey());
+    }
+
+    // required .yunquan.E_MSG_OBJECT_TYPE Type = 5;
     if (has_type()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
     }
 
+    // optional string name = 13;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
+    }
+
+    // optional uint32 sessionId = 14;
+    if (has_sessionid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->sessionid());
+    }
+
   }
   switch (msgObjectOneof_case()) {
-    // optional .yunquan.MsgObjSystem objSystem = 5;
+    // optional .yunquan.MsgObjSystem objSystem = 6;
     case kObjSystem: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->objsystem());
       break;
     }
-    // optional .yunquan.MsgObjText objText = 6;
+    // optional .yunquan.MsgObjText objText = 7;
     case kObjText: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->objtext());
       break;
     }
-    // optional .yunquan.MsgObjImage objImage = 7;
+    // optional .yunquan.MsgObjImage objImage = 8;
     case kObjImage: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->objimage());
       break;
     }
-    // optional .yunquan.MsgObjVoice objVoice = 8;
+    // optional .yunquan.MsgObjVoice objVoice = 9;
     case kObjVoice: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->objvoice());
       break;
     }
-    // optional .yunquan.MsgObjVideo objVideo = 9;
+    // optional .yunquan.MsgObjVideo objVideo = 10;
     case kObjVideo: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->objvideo());
       break;
     }
-    // optional .yunquan.MsgObjLink objLink = 10;
+    // optional .yunquan.MsgObjLink objLink = 11;
     case kObjLink: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->objlink());
       break;
     }
-    // optional .yunquan.MsgObjCard objCard = 11;
+    // optional .yunquan.MsgObjCard objCard = 12;
     case kObjCard: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -597,8 +695,17 @@ void ChatMsg::MergeFrom(const ChatMsg& from) {
     if (from.has_time()) {
       set_time(from.time());
     }
+    if (from.has_synckey()) {
+      set_synckey(from.synckey());
+    }
     if (from.has_type()) {
       set_type(from.type());
+    }
+    if (from.has_name()) {
+      set_name(from.name());
+    }
+    if (from.has_sessionid()) {
+      set_sessionid(from.sessionid());
     }
   }
   mutable_unknown_fields()->append(from.unknown_fields());
@@ -611,7 +718,7 @@ void ChatMsg::CopyFrom(const ChatMsg& from) {
 }
 
 bool ChatMsg::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x00000017) != 0x00000017) return false;
 
   if (has_objsystem()) {
     if (!this->objsystem().IsInitialized()) return false;
@@ -642,7 +749,10 @@ void ChatMsg::Swap(ChatMsg* other) {
     std::swap(fromuid_, other->fromuid_);
     std::swap(msgid_, other->msgid_);
     std::swap(time_, other->time_);
+    std::swap(synckey_, other->synckey_);
     std::swap(type_, other->type_);
+    std::swap(name_, other->name_);
+    std::swap(sessionid_, other->sessionid_);
     std::swap(msgObjectOneof_, other->msgObjectOneof_);
     std::swap(_oneof_case_[0], other->_oneof_case_[0]);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

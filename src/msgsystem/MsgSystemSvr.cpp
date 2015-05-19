@@ -17,6 +17,11 @@ void* RecvmsgTask(void *param)
     return NULL;
 }
 
+void* HeartbeatTask(void *param)
+{
+    testCase.HeartBeat(client_info_t);
+    return NULL;
+}
 
 /**
  * 测试主程序
@@ -41,45 +46,51 @@ int main(int argc, char **argv)
          printf("SendMsgTask thread create failure.\n");
     }
 
-#if 0
+
     /* heartbeat task thread */
-    ret = pthread_create(&client_info_t->heartbeat_task_handle, NULL, heartbeat_task, (void *)&client_info_t->sockfd);
+    ret = pthread_create(&client_info_t->heartbeat_task_handle, NULL, HeartbeatTask, (void *)&client_info_t->sockfd);
     if (ret != 0)
     {
          printf("heartbeat  thread create failure.\n");
     }
-#endif
+
     //用户登录
     testCase.UserLogin(client_info_t);
 
-    while(4 != caseId){
-        cout << "Enter TestCase ID number: \n" <<
-                "(1) GroupMsgSend test; \n"<<
-                "(2) GroupJoin test; \n"<<
-                "(3) GroupInfoChange test; \n"<<
-                "(4) Exit test System; \n"<<
-                endl;
-        cin >> caseId;
+    cout << "Enter TestCase ID number: \n" <<
+            "(1) GroupMsgSend test; \n"<<
+            "(2) GroupJoin test; \n"<<
+            "(3) GroupInfoChange test; \n"<<
+            "(4) PersonalMsgSend test; \n"<<
+            "(5) MsgSync test; \n"<<
+            "(6) Exit test System; \n"<<
+            endl;
+    cin >> caseId;
 
 
-        switch(caseId){
-        case 1:
-            testCase.GroupMsgSend(client_info_t);
-            break;
-        case 2:
-            testCase.GroupJoin();
-            break;
-        case 3:
-            testCase.GroupInfoChange();
-            break;
-        case 4:
-            break;
-        default:
-            cout << "Your enter is error ,please " << endl;
-            break;
-        }
-
+    switch(caseId){
+    case 1:
+        testCase.GroupMsgSend(client_info_t);
+        break;
+    case 2:
+        testCase.GroupJoin();
+        break;
+    case 3:
+        testCase.GroupInfoChange();
+        break;
+    case 4:
+        testCase.PersonalMsgSend(client_info_t);
+        break;
+    case 5:
+        testCase.MsgSync(client_info_t);
+        break;
+    case 6:
+        break;
+    default:
+        cout << "Your enter is error ,please " << endl;
+        break;
     }
+
 
     return ERR_SUCCESS;
 }

@@ -26,6 +26,8 @@ public:
     uint32 m_dwObjType;
     MsgObjBase* m_MsgObjBase;
     string m_txt;
+    uint64 m_llSyncKey;
+    string m_srcName;//发送者姓名
 };
 
 #endif /* _PROTOCOL_CCHAT_MSG_SEND_H_ */

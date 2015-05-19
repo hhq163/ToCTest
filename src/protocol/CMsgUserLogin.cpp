@@ -7,12 +7,14 @@
 
 CMsgUserLogin::CMsgUserLogin()
 {
+    m_ClientId = "";
+    m_ClientSecret = "";
     m_wClientType = 0;
 }
 
 CMsgUserLogin::~CMsgUserLogin()
 {
-    m_wClientType = 0;
+
 }
 
 int CMsgUserLogin::Parse(uint8* pBuf, int32& dwSize)
@@ -114,10 +116,10 @@ int CMsgUserLogin::Pack(uint8* pBuf, int32& dwSize)
         return iErr;
     }
     p += dwUsedSize;
-    
+
 ////////////////////////////////////////////////////////////////
     /*  ProtocolBuffer pack */
-    
+
     UserLogin *pUserLogin = new UserLogin();
     pUserLogin->Clear();
 
@@ -133,28 +135,34 @@ int CMsgUserLogin::Pack(uint8* pBuf, int32& dwSize)
     //pAck->PackToArrary(buffer, m_Buflen );
     pUserLogin->SerializeToString(&buff);
     Logger.Log(INFO, "CMsgUserLogin pUserLogin.sessionid=%d", pUserLogin->sessionid());
- 
-/////////////////////////////////////////////////////////// 
+
+    Logger.Log(INFO, "login cmd[0x%04x] ", m_wCmd);
+///////////////////////////////////////////////////////////
     if( dwSize < dwUsedSize + (int)buff.size())
     {
         return ERR_NO_MORE_DATA;
     }
 
     int nRet = 0;
-    if( 0 > ( nRet = CMsgBase::Encrypt((const char*)buff.c_str(), (uint32)buff.size(), (char*)p, dwSize-dwUsedSize ))) 
+    if( 0 > ( nRet = CMsgBase::Encrypt((const char*)buff.c_str(), (uint32)buff.size(), (char*)p, dwSize-dwUsedSize )))
     {
-        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%lld Encrypt failed", m_wCmd, m_dwId);
+        Logger.Log(ERROR, "cmd:[0x%04x] m_dwDesUid:%u Encrypt failed", m_wCmd, m_dwId);
         return ERR_FAILED;
     }
-
     p += nRet;
+
+
     dwSize = m_dwLen = (int32)(p - pBuf);
     UpdateLen(pBuf, dwSize);
-    if(NULL != pUserLogin){
+
+    if(NULL != pUserLogin)
+    {
         delete pUserLogin;
         pUserLogin = NULL;
     }
+
     Logger.Log(INFO, "CMsgUserLogin::Pack(out)");
 
     return ERR_SUCCESS;
 }
+

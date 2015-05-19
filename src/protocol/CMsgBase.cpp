@@ -15,11 +15,11 @@ m_wType(MT_NORMAL),m_pRoute(NULL)
 {
     m_wVer     = PROTOCOL_VERSION_0x1001;
     m_dwLen    = PROTOCOL_HEAD_LEN;
-    m_dwSeqId     = 0;
+    m_dwSeqId  = 0;
     m_wCmd     = CMD_UNKNOW;
-    m_dwId = 0;
+    m_dwId     = 0;
     m_pRoute   = NULL;
-    m_dwSessionId  = 0;
+    m_dwSessionId = 0;
     m_pBuf     = NULL;
 }
 
@@ -62,12 +62,11 @@ int CMsgBase::NewMsgFromBuf(uint8* pBuf, int32 &dwSize, CMsgBase** ppOutMsg)
     p+=4;
     uint32 dwId = ntohl(*((uint32*)p));
     p += 4;
-
+    Logger.Log(INFO, ">>>>>> m_dwLen=%u, m_wVer=0x%04x, m_wCmd=0x%04x dwSeqId=%u dwId=%u", dwLen, wVer, wCmd, dwSeqId, dwId);
     switch (wVer)
     {
     case PROTOCOL_VERSION_0x1001:
     case PROTOCOL_VERSION_0x2001:
-        Logger.Log(INFO, "m_dwLen=%d, m_wVer=0x%04x, m_wCmd=0x%04x dwId=%d",dwLen, wVer, wCmd, dwId);
         break;
     default:
         Logger.Log(ERROR, "parse data, the ver:0x%04x is error! cmd:0x%04x", wVer, wCmd);
@@ -78,7 +77,7 @@ int CMsgBase::NewMsgFromBuf(uint8* pBuf, int32 &dwSize, CMsgBase** ppOutMsg)
 
     if (dwSize < (int32)dwLen)
     {
-        Logger.Log(ERROR, "parse data, the buffer size:%d is less than the msg size:%d, cmd:0x%04x dwDesUid[%lld]",
+        Logger.Log(ERROR, "parse data, the buffer size:%d is less than the msg size:%d, cmd:0x%04x dwDesUid[%u]",
             dwSize, dwLen, wCmd, dwId);
         return ERR_NO_MORE_DATA;
     }
@@ -91,8 +90,6 @@ int CMsgBase::NewMsgFromBuf(uint8* pBuf, int32 &dwSize, CMsgBase** ppOutMsg)
         return ERR_FAILED;
     }
 
-    /* 用户版本号，使用该用户带过来的 */
-    //(*ppOutMsg)->m_wVer = wVer;
 
     int iErr = (*ppOutMsg)->Parse(pBuf, dwSize);
     if (ERR_SUCCESS != iErr)
@@ -120,7 +117,7 @@ int CMsgBase::GetBufFromMsg(uint8* pBuf, int32 &dwSize, CMsgBase* pInMsg)
     case PROTOCOL_VERSION_0x2001:
         break;
     default:
-        Logger.Log(ERROR, "GetBufFromMsg, the ver:0x%04x is error! cmd:[0x%04x] m_llDesUid:%lld",
+        Logger.Log(ERROR, "GetBufFromMsg, the ver:0x%04x is error! cmd:[0x%04x] m_llDesUid:%u",
             pInMsg->m_wVer, pInMsg->m_wCmd, pInMsg->m_dwId);
         return ERR_FAILED;
         break;
@@ -128,7 +125,7 @@ int CMsgBase::GetBufFromMsg(uint8* pBuf, int32 &dwSize, CMsgBase* pInMsg)
 
     if (dwSize < (int32)pInMsg->m_dwLen)
     {
-        Logger.Log(ERROR, "pack data, the buffer size:%d is less than the msg size:%d, cmd:[0x%04x]  m_llDesUid:%d ",\
+        Logger.Log(ERROR, "pack data, the buffer size:%d is less than the msg size:%d, cmd:[0x%04x]  m_llDesUid:%u ",\
             dwSize, pInMsg->m_dwLen, pInMsg->m_wCmd, pInMsg->m_dwId);
 
         return ERR_NO_MORE_SPACE;
@@ -164,8 +161,9 @@ CMsgBase* CMsgBase::NewMsg(uint16 wCmd)
     case CMD_SYS_MODULE_LOGOUT:
         pMsg = new CMsgBase();
         break;
+
     case CMD_SYS_HEART_BEAT:
-        pMsg = new CMsgHeartbeat();
+        pMsg = new CMsgBase();
         break;
 
     case CMD_SYS_HEART_BEAT_ACK:
@@ -175,6 +173,7 @@ CMsgBase* CMsgBase::NewMsg(uint16 wCmd)
     case CMD_SYS_USER_CLOSE:
         pMsg = new CMsgBase();
         break;
+
     case CMD_SYS_USER_CLOSE_ALL:
         pMsg = new CMsgBase();
         break;
@@ -183,46 +182,91 @@ CMsgBase* CMsgBase::NewMsg(uint16 wCmd)
     case CMD_USER_LOGIN:
         pMsg = new CMsgUserLogin();
         break;
+
     case CMD_USER_LOGIN_ACK:
         pMsg = new CMsgUserLoginAck();
         break;
-    case CMD_USER_HEARTBEAT:
-        pMsg = new CMsgHeartbeat();
+
+    case CMD_USER_LOGOUT:
+        pMsg = new CMsgUserLogout();
         break;
-    case CMD_USER_HEARTBEAT_ACK:
-        pMsg = new CMsgHeartbeatAck();
+
+    case CMD_USER_HEARTBEAT:
+        pMsg = new CMsgBase();
+        break;
+
+    case CMD_USER_FORCE_OFFLINE:
+        pMsg = new CMsgForceOffline();
         break;
 
     case CMD_MSG_P2P_SEND:
         pMsg = new CChatMsgSend();
         break;
+
     case CMD_MSG_P2P_RECV:
         pMsg = new CChatMsgRecv();
         break;
+
     case CMD_MSG_GROUP_SEND:
         pMsg = new CChatMsgSend();
         break;
+
     case CMD_MSG_GROUP_RECV:
         pMsg = new CChatMsgRecv();
         break;
+
     case CMD_MSG_NOTIF:
         pMsg = new CMsgNotify();
         break;
 
+    case CMD_MSG_NOTIF_ACK:
+        pMsg = new CMsgNotifyAck();
+        break;
+
+    case CMD_MSG_SYNC:
+        pMsg = new CMsgSync();
+        break;
+
+    case CMD_MSG_PUSH:
+        pMsg = new CMsgPush();
+        break;
+
+    case CMD_USER_HEARTBEAT_ACK:
+    case CMD_USER_LOGOUT_ACK:
     case CMD_MSG_P2P_SEND_ACK:
     case CMD_MSG_P2P_RECV_ACK:
     case CMD_MSG_GROUP_SEND_ACK:
     case CMD_MSG_GROUP_RECV_ACK:
-    case CMD_MSG_NOTIF_ACK:
+    case CMD_MSG_SYNC_ACK:
+    case CMD_MSG_PUSH_ACK:
     case CMD_GROUP_MEMBER_ADD_ACK:
+    case CMD_ENTER_ACTIVITY_ROOM_ACK:
+    case CMD_EXIT_ACTIVITY_ROOM_ACK:
         pMsg = new CMsgBaseAck();
         break;
 
      /* 群聊相关协议 */
-
     case CMD_CS_GROUP_USER_LIST_GET:
-        pMsg = new CCSGroupUserListGet();
+        pMsg = new CCSGroupUserListRequest();
         break;
+
+    case CMD_CS_GROUP_USER_LIST_GET_ACK:
+        pMsg = new CCSGroupUserListAck();
+        break;
+
+    case CMD_GROUP_MEMBER_ADD:
+        pMsg = new CCSGroupUserAdd();
+        break;
+
+    /* 活动相关 */
+    case CMD_ENTER_ACTIVITY_ROOM:
+        pMsg = new CMsgActivityRoom();
+        break;
+
+    case CMD_EXIT_ACTIVITY_ROOM:
+        pMsg = new CMsgActivityRoom();
+        break;
+
     default:
         return NULL;
     }
@@ -298,7 +342,7 @@ int CMsgBase::Parse(uint8* pBuf, int32 &dwSize)
 
 int CMsgBase::Pack(uint8* pBuf, int32 &dwSize)
 {
-    Logger.Log(ERROR, "CMsgBase::Pack (in) cmd[0x%04x]", m_wCmd);
+    Logger.Log(ERROR, "CMsgBase::Pack (in)  cmd[0x%04x]", m_wCmd);
     uint8* p      = pBuf;
     *((uint32*)p) = htonl(m_dwLen);
     p += 4;
@@ -327,12 +371,12 @@ int CMsgBase::Encrypt(const char* src, uint32 srclen, char* des, uint32 deslen)
 {
     if ( NULL == src || NULL == des )
     {
-        Logger.Log(ERROR, "Err Encrypt dstuid[%llu] cmd[0x%04x] src==NULL || des == NULL", m_dwId, m_wCmd);
+        Logger.Log(ERROR, "Err Encrypt dstuid[%u] cmd[0x%04x] src==NULL || des == NULL", m_dwId, m_wCmd);
         return -1;
     }
     if ( 0 == srclen || 0 == deslen )
     {
-        Logger.Log(ERROR, "Err Encrypt dstuid[%llu] cmd[0x%04x] srclen[%u] || deslen[%u]", m_dwId, m_wCmd, srclen ,deslen );
+        Logger.Log(ERROR, "Err Encrypt dstuid[%u] cmd[0x%04x] srclen[%u] || deslen[%u]", m_dwId, m_wCmd, srclen ,deslen );
         return -1;
     }
     int nRet = 0;
@@ -369,13 +413,13 @@ int CMsgBase::Decrypt(const char* src, uint32 srclen, char * & des, uint32 desle
 {
     if ( NULL == src )
     {
-        Logger.Log(ERROR, "Err Decrypt dstuid[%llu] cmd[%p] src==NULL || des == NULL", m_dwId, m_wCmd);
+        Logger.Log(ERROR, "Err Decrypt dstuid[%u] cmd[%p] src==NULL || des == NULL", m_dwId, m_wCmd);
         return -1;
     }
 
     if ( 0 == srclen || 0 == deslen )
     {
-        Logger.Log(ERROR, "Err Decrypt dstuid[%llu] cmd[%p] srclen[%u] || deslen[%u]", m_dwId, m_wCmd, srclen ,deslen );
+        Logger.Log(ERROR, "Err Decrypt dstuid[%u] cmd[%d] srclen[%u] || deslen[%u]", m_dwId, m_wCmd, srclen ,deslen );
         return -1;
     }
 

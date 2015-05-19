@@ -1,29 +1,30 @@
 /*
- * CCSGroupUserListGet.cpp
+ * CCSGroupUserListRequest.cpp
  *
  *  Created on: 2015年4月9日
  *      Author: hhq163
  */
 
+
 #include "Common.h"
 #include "Log.h"
-#include "GroupUserListGet.pb.h"
-#include "CCSGroupUserListGet.h"
+#include "GroupUserListRequest.pb.h"
+#include "CCSGroupUserListRequest.h"
 
-CCSGroupUserListGet::CCSGroupUserListGet() {
+CCSGroupUserListRequest::CCSGroupUserListRequest() {
     // TODO Auto-generated constructor stub
 
 }
 
-CCSGroupUserListGet::~CCSGroupUserListGet() {
+CCSGroupUserListRequest::~CCSGroupUserListRequest() {
     // TODO Auto-generated destructor stub
 }
 
-int CCSGroupUserListGet::Parse(uint8* pBuf, int32& dwSize)
+int CCSGroupUserListRequest::Parse(uint8* pBuf, int32& dwSize)
 {
     uint8* p = pBuf;
     int32 dwUsedSize = dwSize;
-    Logger.Log(ERROR, "CCSGroupUserListGet::Parse(in)");
+    Logger.Log(ERROR, "CCSGroupUserListRequest::Parse(in)");
 
     int iErr = CMsgBase::Parse(pBuf, dwUsedSize);
     if(ERR_SUCCESS != iErr)
@@ -57,14 +58,14 @@ int CCSGroupUserListGet::Parse(uint8* pBuf, int32& dwSize)
 //////////////////////////////////////////////////////////////////////////
     string strData(pdata, m_Buflen);
 
-    GroupUserListGet *pGroupUserListGet = new GroupUserListGet();
-    pGroupUserListGet->Clear();
+    GroupUserListRequest *pGroupUserListRequest = new GroupUserListRequest();
+    pGroupUserListRequest->Clear();
 
-    if (pGroupUserListGet->ParseFromString(strData))
+    if (pGroupUserListRequest->ParseFromString(strData))
     {
-        if(pGroupUserListGet->has_groupsessionid())
+        if(pGroupUserListRequest->has_sessionid())
         {
-            m_dwSessionId = pGroupUserListGet->groupsessionid();
+            m_dwSessionId = pGroupUserListRequest->sessionid();
         }
 
         Logger.Log(INFO, "cmd:[0x%04x] m_dwDesUid:[%lld] m_dwSessionId:[%d]", \
@@ -87,15 +88,15 @@ int CCSGroupUserListGet::Parse(uint8* pBuf, int32& dwSize)
     p += m_Buflen;
 
     dwSize = (int32)(p - pBuf );
-    Logger.Log(ERROR, "CCSGroupUserListGet::Parse(out)");
+    Logger.Log(ERROR, "CCSGroupUserListRequest::Parse(out)");
     return ERR_SUCCESS;
 
 }
 
 
-int CCSGroupUserListGet::Pack(uint8* pBuf, int32& dwSize)
+int CCSGroupUserListRequest::Pack(uint8* pBuf, int32& dwSize)
 {
-    Logger.Log(ERROR, "CCSGroupUserListGet::Pack(in)");
+    Logger.Log(ERROR, "CCSGroupUserListRequest::Pack(in)");
     uint8* p = pBuf;
     int32 dwUsedSize = dwSize;
     int iErr = CMsgBase::Pack(p, dwUsedSize);
@@ -108,15 +109,15 @@ int CCSGroupUserListGet::Pack(uint8* pBuf, int32& dwSize)
 ////////////////////////////////////////////////////////////////
     /*  ProtocolBuffer pack */
 
-    GroupUserListGet *pGroupUserListGet = new GroupUserListGet();
-    pGroupUserListGet->Clear();
+    GroupUserListRequest *pGroupUserListRequest = new GroupUserListRequest();
+    pGroupUserListRequest->Clear();
 
-    pGroupUserListGet->set_groupsessionid(m_dwSessionId);
+    pGroupUserListRequest->set_sessionid(m_dwSessionId);
 
 
     string buff = "";
-    pGroupUserListGet->SerializeToString(&buff);
-    Logger.Log(INFO, "CCSGroupUserListGet cmd=0x%04x pGroupUserListGet.sessionid=%d", m_wCmd, pGroupUserListGet->groupsessionid());
+    pGroupUserListRequest->SerializeToString(&buff);
+    Logger.Log(INFO, "CCSGroupUserListRequest cmd=0x%04x pGroupUserListRequest.sessionid=%d", m_wCmd, pGroupUserListRequest->sessionid());
 
 ///////////////////////////////////////////////////////////
     if( dwSize < dwUsedSize + (int)buff.size())
@@ -134,7 +135,7 @@ int CCSGroupUserListGet::Pack(uint8* pBuf, int32& dwSize)
     p += nRet;
     dwSize = m_dwLen = (int32)(p - pBuf);
     UpdateLen(pBuf, dwSize);
-    Logger.Log(ERROR, "CCSGroupUserListGet::Pack(out)");
+    Logger.Log(ERROR, "CCSGroupUserListRequest::Pack(out)");
 
     return ERR_SUCCESS;
 }

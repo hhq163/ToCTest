@@ -105,6 +105,7 @@ typedef void (*FunCallback)(void* pParam, uint16 wFlag);
 #define MAX_MSG_LEN             1024
 #define VISTORSYNC_BASE_TIME    5
 
+#define PAGE_SIZE               20      //消息推送分页大小
 
 //protocol version
 /* for version <= 2.0 */
@@ -138,8 +139,9 @@ const uint16 CMD_UNKNOW = 0x0FFF; //未知命令字
 
 #define CLIENT_IP      "127.0.0.1"
 #define CLIENT_PORT     6500
-#define USER_ID         10186
-#define GROUP_ID        68
+#define USER_ID         10258
+#define GROUP_ID        26
+#define DES_USER_ID     10233
 
 enum IO_TYPE
 {

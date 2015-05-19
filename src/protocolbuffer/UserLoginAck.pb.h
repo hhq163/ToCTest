@@ -97,24 +97,17 @@ class UserLoginAck : public ::google::protobuf::MessageLite {
 
   // accessors -------------------------------------------------------
 
-  // required int32 sessionId = 1;
-  inline bool has_sessionid() const;
-  inline void clear_sessionid();
-  static const int kSessionIdFieldNumber = 1;
-  inline ::google::protobuf::int32 sessionid() const;
-  inline void set_sessionid(::google::protobuf::int32 value);
-
-  // required int32 result = 2;
+  // required int32 result = 1;
   inline bool has_result() const;
   inline void clear_result();
-  static const int kResultFieldNumber = 2;
+  static const int kResultFieldNumber = 1;
   inline ::google::protobuf::int32 result() const;
   inline void set_result(::google::protobuf::int32 value);
 
-  // optional string msg = 3;
+  // optional string msg = 2;
   inline bool has_msg() const;
   inline void clear_msg();
-  static const int kMsgFieldNumber = 3;
+  static const int kMsgFieldNumber = 2;
   inline const ::std::string& msg() const;
   inline void set_msg(const ::std::string& value);
   inline void set_msg(const char* value);
@@ -123,22 +116,44 @@ class UserLoginAck : public ::google::protobuf::MessageLite {
   inline ::std::string* release_msg();
   inline void set_allocated_msg(::std::string* msg);
 
+  // optional int32 sessionId = 3;
+  inline bool has_sessionid() const;
+  inline void clear_sessionid();
+  static const int kSessionIdFieldNumber = 3;
+  inline ::google::protobuf::int32 sessionid() const;
+  inline void set_sessionid(::google::protobuf::int32 value);
+
+  // required string name = 4;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 4;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  inline void set_allocated_name(::std::string* name);
+
   // @@protoc_insertion_point(class_scope:yunquan.UserLoginAck)
  private:
-  inline void set_has_sessionid();
-  inline void clear_has_sessionid();
   inline void set_has_result();
   inline void clear_has_result();
   inline void set_has_msg();
   inline void clear_has_msg();
+  inline void set_has_sessionid();
+  inline void clear_has_sessionid();
+  inline void set_has_name();
+  inline void clear_has_name();
 
   ::std::string _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::int32 sessionid_;
-  ::google::protobuf::int32 result_;
   ::std::string* msg_;
+  ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 sessionid_;
+  ::std::string* name_;
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_UserLoginAck_2eproto_impl();
   #else
@@ -157,39 +172,15 @@ class UserLoginAck : public ::google::protobuf::MessageLite {
 
 // UserLoginAck
 
-// required int32 sessionId = 1;
-inline bool UserLoginAck::has_sessionid() const {
+// required int32 result = 1;
+inline bool UserLoginAck::has_result() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void UserLoginAck::set_has_sessionid() {
+inline void UserLoginAck::set_has_result() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void UserLoginAck::clear_has_sessionid() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void UserLoginAck::clear_sessionid() {
-  sessionid_ = 0;
-  clear_has_sessionid();
-}
-inline ::google::protobuf::int32 UserLoginAck::sessionid() const {
-  // @@protoc_insertion_point(field_get:yunquan.UserLoginAck.sessionId)
-  return sessionid_;
-}
-inline void UserLoginAck::set_sessionid(::google::protobuf::int32 value) {
-  set_has_sessionid();
-  sessionid_ = value;
-  // @@protoc_insertion_point(field_set:yunquan.UserLoginAck.sessionId)
-}
-
-// required int32 result = 2;
-inline bool UserLoginAck::has_result() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void UserLoginAck::set_has_result() {
-  _has_bits_[0] |= 0x00000002u;
-}
 inline void UserLoginAck::clear_has_result() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000001u;
 }
 inline void UserLoginAck::clear_result() {
   result_ = 0;
@@ -205,15 +196,15 @@ inline void UserLoginAck::set_result(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:yunquan.UserLoginAck.result)
 }
 
-// optional string msg = 3;
+// optional string msg = 2;
 inline bool UserLoginAck::has_msg() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000002u) != 0;
 }
 inline void UserLoginAck::set_has_msg() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000002u;
 }
 inline void UserLoginAck::clear_has_msg() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void UserLoginAck::clear_msg() {
   if (msg_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
@@ -279,6 +270,106 @@ inline void UserLoginAck::set_allocated_msg(::std::string* msg) {
     msg_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:yunquan.UserLoginAck.msg)
+}
+
+// optional int32 sessionId = 3;
+inline bool UserLoginAck::has_sessionid() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void UserLoginAck::set_has_sessionid() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void UserLoginAck::clear_has_sessionid() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void UserLoginAck::clear_sessionid() {
+  sessionid_ = 0;
+  clear_has_sessionid();
+}
+inline ::google::protobuf::int32 UserLoginAck::sessionid() const {
+  // @@protoc_insertion_point(field_get:yunquan.UserLoginAck.sessionId)
+  return sessionid_;
+}
+inline void UserLoginAck::set_sessionid(::google::protobuf::int32 value) {
+  set_has_sessionid();
+  sessionid_ = value;
+  // @@protoc_insertion_point(field_set:yunquan.UserLoginAck.sessionId)
+}
+
+// required string name = 4;
+inline bool UserLoginAck::has_name() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void UserLoginAck::set_has_name() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void UserLoginAck::clear_has_name() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void UserLoginAck::clear_name() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& UserLoginAck::name() const {
+  // @@protoc_insertion_point(field_get:yunquan.UserLoginAck.name)
+  return *name_;
+}
+inline void UserLoginAck::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set:yunquan.UserLoginAck.name)
+}
+inline void UserLoginAck::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set_char:yunquan.UserLoginAck.name)
+}
+inline void UserLoginAck::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:yunquan.UserLoginAck.name)
+}
+inline ::std::string* UserLoginAck::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:yunquan.UserLoginAck.name)
+  return name_;
+}
+inline ::std::string* UserLoginAck::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void UserLoginAck::set_allocated_name(::std::string* name) {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
+  if (name) {
+    set_has_name();
+    name_ = name;
+  } else {
+    clear_has_name();
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:yunquan.UserLoginAck.name)
 }
 
 

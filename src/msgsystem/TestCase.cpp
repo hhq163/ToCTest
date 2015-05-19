@@ -10,10 +10,12 @@
 #include "Log.h"
 #include "MsgObj.h"
 #include "ChatMsg.pb.h"
+#include "ModuleMgr.h"
 #include "TestCase.h"
 
 TestCase::TestCase() {
     // TODO Auto-generated constructor stub
+    m_pMgr = new ModuleMgr();
 }
 
 TestCase::~TestCase() {
@@ -38,6 +40,8 @@ int TestCase::UserLogin(CLIENT_INFO_T* userClient){
     cout << "YTestCase::UserLogin (out) ret = "<< ret<<"\n" << endl;
     return ERR_SUCCESS;
 };
+
+
 /**
  * 群聊消息发送
  */
@@ -45,16 +49,21 @@ int TestCase::GroupMsgSend(CLIENT_INFO_T* userClient){
     Logger.Log(INFO, "YTestCase::GroupMsgSend (in) 111");
 
     int8 msg_send[1024] = {'\0'};
-    int sendcase = 0;
     int ret = 0;
 
     struct timeval tv;
     gettimeofday(&tv, NULL) ;
 
-    while(1 != sendcase){
+    while(1){
         cout << "Please input the msg your want to send: \n" << endl;
         cin >> msg_send;
-        if(strlen(msg_send) != 0){
+
+        Logger.Log(INFO, "TestCase::GroupMsgSend strlen(msg_send)=%d, msg_send=%s", strlen(msg_send),msg_send);
+
+        if(strlen(msg_send) == 1 && msg_send[0] == '0'){
+            //如果输入是0，跳出程序
+            break;
+        }else{
             MsgText* msgText = new MsgText();
             msgText->type = 1;
             msgText->msg = msg_send;
@@ -66,8 +75,8 @@ int TestCase::GroupMsgSend(CLIENT_INFO_T* userClient){
             pCChatMsgSend->m_dwObjType = MOT_TEXT;
             pCChatMsgSend->m_sendtime = time(0);
             pCChatMsgSend->m_MsgObjBase = msgText;
-            pCChatMsgSend->m_msgId = 780;
-//            pCChatMsgSend->m_msgId  = (tv.tv_sec * 1000000 + tv.tv_usec);
+//            pCChatMsgSend->m_msgId = 78;
+            pCChatMsgSend->m_msgId  = (tv.tv_sec * 1000000 + tv.tv_usec);
 
             Logger.Log(INFO, "TestCase::GroupMsgSend2222");
             ret = this->Write(pCChatMsgSend, userClient);
@@ -77,15 +86,11 @@ int TestCase::GroupMsgSend(CLIENT_INFO_T* userClient){
                 return ERR_FAILED;
             }
 
-        }else{//如果输入是空，跳出程序
-//            sendcase = 1;
         }
 
     }
 
-
-
-    cout << "YTestCase::GroupMsgSend (out) \n" << endl;
+    Logger.Log(INFO, "YTestCase::GroupMsgSend (out)");
     return ERR_SUCCESS;
 };
 
@@ -112,7 +117,109 @@ int TestCase::GroupInfoChange(){
     return ERR_SUCCESS;
 };
 
+/**
+ * 单聊消息发送
+ */
+int TestCase::PersonalMsgSend(CLIENT_INFO_T* userClient)
+{
+    cout << "YTestCase::PersonalMsgSend (in) \n" << endl;
+    int8 msg_send[1024] = {'\0'};
+    int sendcase = 0;
+    int ret = 0;
 
+    struct timeval tv;
+    gettimeofday(&tv, NULL) ;
+
+    while(1 != sendcase){
+        cout << "Please input the msg your want to send: \n" << endl;
+        cin >> msg_send;
+
+        if(strlen(msg_send) == 0 && cin.get() == '\n'){
+            //如果输入是空，跳出程序
+            break;
+        }else{
+            MsgText* msgText = new MsgText();
+            msgText->type = 1;
+            msgText->msg = msg_send;
+
+            CChatMsgSend* pCChatMsgSend = (CChatMsgSend*)CMsgBase::NewMsg(CMD_MSG_P2P_SEND);
+            pCChatMsgSend->m_dwId = DES_USER_ID;
+            pCChatMsgSend->m_dwFromUid = USER_ID;
+            pCChatMsgSend->m_dwSeqId = 16;
+            pCChatMsgSend->m_dwObjType = MOT_TEXT;
+            pCChatMsgSend->m_sendtime = time(0);
+            pCChatMsgSend->m_MsgObjBase = msgText;
+            pCChatMsgSend->m_msgId = 78;
+//            pCChatMsgSend->m_msgId  = (tv.tv_sec * 1000000 + tv.tv_usec);
+
+            Logger.Log(INFO, "TestCase::PersonalMsgSend2222");
+            ret = this->Write(pCChatMsgSend, userClient);
+            if(ret < 0)
+            {
+                printf("message send failure. ret=%d\n", ret);
+                return ERR_FAILED;
+            }
+
+        }
+
+    }
+
+    Logger.Log(INFO, "YTestCase::PersonalMsgSend (out)");
+
+    return ERR_SUCCESS;
+};
+
+/**
+ * 消息同步
+ */
+int TestCase::MsgSync(CLIENT_INFO_T* userClient)
+{
+    cout << "YTestCase::MsgSync (in) \n" << endl;
+    int8 msg_send[1024] = {'\0'};
+    int sendcase = 0;
+    int ret = 0;
+
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+
+    do{
+        this->DoSyncMsg(userClient);
+
+        cout << "Please input the option:1,continue,0,exit \n" << endl;
+        cin >> msg_send;
+
+        if(strlen(msg_send) == 0 && cin.get() == '\n'){
+            //如果输入是0，跳出程序
+            break;
+        }
+    }while(1 != sendcase);
+
+
+    Logger.Log(INFO, "YTestCase::MsgSync (out)");
+
+    return ERR_SUCCESS;
+};
+
+/**
+ * 同步消息
+ */
+int TestCase::DoSyncMsg(CLIENT_INFO_T* userClient)
+{
+    int ret = ERR_SUCCESS;
+    CMsgSync* pCMsgSync = (CMsgSync*)CMsgBase::NewMsg(CMD_MSG_SYNC);
+    pCMsgSync->m_dwId = DES_USER_ID;
+    pCMsgSync->m_dwSeqId = 16;
+    pCMsgSync->m_llSyncKey = 1;
+
+    Logger.Log(INFO, "TestCase::MsgSync2222");
+    ret = this->Write(pCMsgSync, userClient);
+    if(ret < 0)
+    {
+        printf("message send failure. ret=%d\n", ret);
+        return ERR_FAILED;
+    }
+    return ERR_SUCCESS;
+}
 /**
  * 消息读取
  */
@@ -243,23 +350,23 @@ int TestCase::Write(CMsgBase* pMsg, CLIENT_INFO_T* userClient)
             int dwSize = MAX_BUFFER_SIZE;
             int iErr = Pack(m_stSendBuffer.cBuffer, dwSize, pMsg);
 
-            if (CMD_SYS_HEART_BEAT != pMsg->m_wCmd && CMD_SYS_HEART_BEAT_ACK != pMsg->m_wCmd)
+            if (CMD_USER_HEARTBEAT != pMsg->m_wCmd && CMD_USER_HEARTBEAT_ACK != pMsg->m_wCmd)
             {
                 Logger.Log(NOTIC, "<<<<<<  write cmd:[0x%04x] [0x%04x] , to user:%d, err:%d",\
                     (pMsg->m_wCmd), (pMsg->m_wCmd) & ~CMD_INNER_FLAGE, pMsg->m_dwId, iErr);
             }
 
-#if 0
-            if (CMD_SYS_HEART_BEAT != pMsg->m_wCmd)
+
+            if (CMD_USER_HEARTBEAT != pMsg->m_wCmd)
             {
                 CMsgBase::DelMsg(pMsg);
             }
 
-            if (ERR_SUCCESS != iErr)
-            {
-                continue;
-            }
-#endif
+//            if (ERR_SUCCESS != iErr)
+//            {
+//                continue;
+//            }
+
             m_stSendBuffer.iTotal = dwSize;
         }
 
@@ -300,7 +407,7 @@ int TestCase::SendPkg(CLIENT_INFO_T* userClient)
         }
         else
         {
-            Logger.Log(INFO, "iRet>0 iRet=%d", iRet);
+//            Logger.Log(INFO, "iRet>0 iRet=%d", iRet);
             iErr = IO_SUCCESS;
             m_stSendBuffer.iSize += iRet;
             if (m_stSendBuffer.iSize == m_stSendBuffer.iTotal)
@@ -361,8 +468,37 @@ int TestCase::HandlePkg(CMsgBase* pMsg)
             Logger.Log(INFO, "The CMD_MSG_GROUP_SEND CMD request come back!");
             break;
         }
+
+        case CMD_MSG_SYNC_ACK:
+            m_pMgr->HandleSyncMsgAck(pMsg);
+            Logger.Log(INFO, "The CMD_MSG_GROUP_SEND CMD request come back!");
+            break;
         default:
             break;
     }
     return ERR_SUCCESS;
+}
+/**
+ * 发送心跳
+ */
+int TestCase::HeartBeat(CLIENT_INFO_T* userClient)
+{
+    cout << "YTestCase::HeartBeat (in) \n" << endl;
+
+    int ret = ERR_SUCCESS;
+
+    CMsgBase* userHeartbeatMsg = (CMsgBase*)CMsgBase::NewMsg(CMD_USER_HEARTBEAT);
+    userHeartbeatMsg->m_dwId = USER_ID;
+    userHeartbeatMsg->m_dwSeqId = 0;
+
+    while(1){
+        Logger.Log(INFO, "YTestCase::HeartBeat (send)");
+        ret = this->Write(userHeartbeatMsg, userClient);
+
+        sleep(MAX_HEARTBEAT);
+    }
+
+    cout << "YTestCase::HeartBeat (out) \n" << endl;
+
+    return ret;
 }

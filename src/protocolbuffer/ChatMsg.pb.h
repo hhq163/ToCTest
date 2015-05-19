@@ -60,13 +60,13 @@ class ChatMsg : public ::google::protobuf::MessageLite {
   static const ChatMsg& default_instance();
 
   enum MsgObjectOneofCase {
-    kObjSystem = 5,
-    kObjText = 6,
-    kObjImage = 7,
-    kObjVoice = 8,
-    kObjVideo = 9,
-    kObjLink = 10,
-    kObjCard = 11,
+    kObjSystem = 6,
+    kObjText = 7,
+    kObjImage = 8,
+    kObjVoice = 9,
+    kObjVideo = 10,
+    kObjLink = 11,
+    kObjCard = 12,
     MSGOBJECTONEOF_NOT_SET = 0,
   };
 
@@ -130,71 +130,97 @@ class ChatMsg : public ::google::protobuf::MessageLite {
   inline ::google::protobuf::uint32 time() const;
   inline void set_time(::google::protobuf::uint32 value);
 
-  // required .yunquan.E_MSG_OBJECT_TYPE Type = 4;
+  // optional int64 syncKey = 4;
+  inline bool has_synckey() const;
+  inline void clear_synckey();
+  static const int kSyncKeyFieldNumber = 4;
+  inline ::google::protobuf::int64 synckey() const;
+  inline void set_synckey(::google::protobuf::int64 value);
+
+  // required .yunquan.E_MSG_OBJECT_TYPE Type = 5;
   inline bool has_type() const;
   inline void clear_type();
-  static const int kTypeFieldNumber = 4;
+  static const int kTypeFieldNumber = 5;
   inline ::yunquan::E_MSG_OBJECT_TYPE type() const;
   inline void set_type(::yunquan::E_MSG_OBJECT_TYPE value);
 
-  // optional .yunquan.MsgObjSystem objSystem = 5;
+  // optional string name = 13;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 13;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  inline void set_allocated_name(::std::string* name);
+
+  // optional uint32 sessionId = 14;
+  inline bool has_sessionid() const;
+  inline void clear_sessionid();
+  static const int kSessionIdFieldNumber = 14;
+  inline ::google::protobuf::uint32 sessionid() const;
+  inline void set_sessionid(::google::protobuf::uint32 value);
+
+  // optional .yunquan.MsgObjSystem objSystem = 6;
   inline bool has_objsystem() const;
   inline void clear_objsystem();
-  static const int kObjSystemFieldNumber = 5;
+  static const int kObjSystemFieldNumber = 6;
   inline const ::yunquan::MsgObjSystem& objsystem() const;
   inline ::yunquan::MsgObjSystem* mutable_objsystem();
   inline ::yunquan::MsgObjSystem* release_objsystem();
   inline void set_allocated_objsystem(::yunquan::MsgObjSystem* objsystem);
 
-  // optional .yunquan.MsgObjText objText = 6;
+  // optional .yunquan.MsgObjText objText = 7;
   inline bool has_objtext() const;
   inline void clear_objtext();
-  static const int kObjTextFieldNumber = 6;
+  static const int kObjTextFieldNumber = 7;
   inline const ::yunquan::MsgObjText& objtext() const;
   inline ::yunquan::MsgObjText* mutable_objtext();
   inline ::yunquan::MsgObjText* release_objtext();
   inline void set_allocated_objtext(::yunquan::MsgObjText* objtext);
 
-  // optional .yunquan.MsgObjImage objImage = 7;
+  // optional .yunquan.MsgObjImage objImage = 8;
   inline bool has_objimage() const;
   inline void clear_objimage();
-  static const int kObjImageFieldNumber = 7;
+  static const int kObjImageFieldNumber = 8;
   inline const ::yunquan::MsgObjImage& objimage() const;
   inline ::yunquan::MsgObjImage* mutable_objimage();
   inline ::yunquan::MsgObjImage* release_objimage();
   inline void set_allocated_objimage(::yunquan::MsgObjImage* objimage);
 
-  // optional .yunquan.MsgObjVoice objVoice = 8;
+  // optional .yunquan.MsgObjVoice objVoice = 9;
   inline bool has_objvoice() const;
   inline void clear_objvoice();
-  static const int kObjVoiceFieldNumber = 8;
+  static const int kObjVoiceFieldNumber = 9;
   inline const ::yunquan::MsgObjVoice& objvoice() const;
   inline ::yunquan::MsgObjVoice* mutable_objvoice();
   inline ::yunquan::MsgObjVoice* release_objvoice();
   inline void set_allocated_objvoice(::yunquan::MsgObjVoice* objvoice);
 
-  // optional .yunquan.MsgObjVideo objVideo = 9;
+  // optional .yunquan.MsgObjVideo objVideo = 10;
   inline bool has_objvideo() const;
   inline void clear_objvideo();
-  static const int kObjVideoFieldNumber = 9;
+  static const int kObjVideoFieldNumber = 10;
   inline const ::yunquan::MsgObjVideo& objvideo() const;
   inline ::yunquan::MsgObjVideo* mutable_objvideo();
   inline ::yunquan::MsgObjVideo* release_objvideo();
   inline void set_allocated_objvideo(::yunquan::MsgObjVideo* objvideo);
 
-  // optional .yunquan.MsgObjLink objLink = 10;
+  // optional .yunquan.MsgObjLink objLink = 11;
   inline bool has_objlink() const;
   inline void clear_objlink();
-  static const int kObjLinkFieldNumber = 10;
+  static const int kObjLinkFieldNumber = 11;
   inline const ::yunquan::MsgObjLink& objlink() const;
   inline ::yunquan::MsgObjLink* mutable_objlink();
   inline ::yunquan::MsgObjLink* release_objlink();
   inline void set_allocated_objlink(::yunquan::MsgObjLink* objlink);
 
-  // optional .yunquan.MsgObjCard objCard = 11;
+  // optional .yunquan.MsgObjCard objCard = 12;
   inline bool has_objcard() const;
   inline void clear_objcard();
-  static const int kObjCardFieldNumber = 11;
+  static const int kObjCardFieldNumber = 12;
   inline const ::yunquan::MsgObjCard& objcard() const;
   inline ::yunquan::MsgObjCard* mutable_objcard();
   inline ::yunquan::MsgObjCard* release_objcard();
@@ -209,8 +235,14 @@ class ChatMsg : public ::google::protobuf::MessageLite {
   inline void clear_has_msgid();
   inline void set_has_time();
   inline void clear_has_time();
+  inline void set_has_synckey();
+  inline void clear_has_synckey();
   inline void set_has_type();
   inline void clear_has_type();
+  inline void set_has_name();
+  inline void clear_has_name();
+  inline void set_has_sessionid();
+  inline void clear_has_sessionid();
   inline void set_has_objsystem();
   inline void set_has_objtext();
   inline void set_has_objimage();
@@ -230,7 +262,10 @@ class ChatMsg : public ::google::protobuf::MessageLite {
   ::google::protobuf::uint64 msgid_;
   ::google::protobuf::uint32 fromuid_;
   ::google::protobuf::uint32 time_;
+  ::google::protobuf::int64 synckey_;
+  ::std::string* name_;
   int type_;
+  ::google::protobuf::uint32 sessionid_;
   union MsgObjectOneofUnion {
     ::yunquan::MsgObjSystem* objsystem_;
     ::yunquan::MsgObjText* objtext_;
@@ -332,15 +367,39 @@ inline void ChatMsg::set_time(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:yunquan.ChatMsg.time)
 }
 
-// required .yunquan.E_MSG_OBJECT_TYPE Type = 4;
-inline bool ChatMsg::has_type() const {
+// optional int64 syncKey = 4;
+inline bool ChatMsg::has_synckey() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void ChatMsg::set_has_type() {
+inline void ChatMsg::set_has_synckey() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void ChatMsg::clear_has_type() {
+inline void ChatMsg::clear_has_synckey() {
   _has_bits_[0] &= ~0x00000008u;
+}
+inline void ChatMsg::clear_synckey() {
+  synckey_ = GOOGLE_LONGLONG(0);
+  clear_has_synckey();
+}
+inline ::google::protobuf::int64 ChatMsg::synckey() const {
+  // @@protoc_insertion_point(field_get:yunquan.ChatMsg.syncKey)
+  return synckey_;
+}
+inline void ChatMsg::set_synckey(::google::protobuf::int64 value) {
+  set_has_synckey();
+  synckey_ = value;
+  // @@protoc_insertion_point(field_set:yunquan.ChatMsg.syncKey)
+}
+
+// required .yunquan.E_MSG_OBJECT_TYPE Type = 5;
+inline bool ChatMsg::has_type() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void ChatMsg::set_has_type() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void ChatMsg::clear_has_type() {
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void ChatMsg::clear_type() {
   type_ = 0;
@@ -357,7 +416,107 @@ inline void ChatMsg::set_type(::yunquan::E_MSG_OBJECT_TYPE value) {
   // @@protoc_insertion_point(field_set:yunquan.ChatMsg.Type)
 }
 
-// optional .yunquan.MsgObjSystem objSystem = 5;
+// optional string name = 13;
+inline bool ChatMsg::has_name() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void ChatMsg::set_has_name() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void ChatMsg::clear_has_name() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void ChatMsg::clear_name() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& ChatMsg::name() const {
+  // @@protoc_insertion_point(field_get:yunquan.ChatMsg.name)
+  return *name_;
+}
+inline void ChatMsg::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set:yunquan.ChatMsg.name)
+}
+inline void ChatMsg::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set_char:yunquan.ChatMsg.name)
+}
+inline void ChatMsg::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:yunquan.ChatMsg.name)
+}
+inline ::std::string* ChatMsg::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:yunquan.ChatMsg.name)
+  return name_;
+}
+inline ::std::string* ChatMsg::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void ChatMsg::set_allocated_name(::std::string* name) {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
+  if (name) {
+    set_has_name();
+    name_ = name;
+  } else {
+    clear_has_name();
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:yunquan.ChatMsg.name)
+}
+
+// optional uint32 sessionId = 14;
+inline bool ChatMsg::has_sessionid() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void ChatMsg::set_has_sessionid() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void ChatMsg::clear_has_sessionid() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void ChatMsg::clear_sessionid() {
+  sessionid_ = 0u;
+  clear_has_sessionid();
+}
+inline ::google::protobuf::uint32 ChatMsg::sessionid() const {
+  // @@protoc_insertion_point(field_get:yunquan.ChatMsg.sessionId)
+  return sessionid_;
+}
+inline void ChatMsg::set_sessionid(::google::protobuf::uint32 value) {
+  set_has_sessionid();
+  sessionid_ = value;
+  // @@protoc_insertion_point(field_set:yunquan.ChatMsg.sessionId)
+}
+
+// optional .yunquan.MsgObjSystem objSystem = 6;
 inline bool ChatMsg::has_objsystem() const {
   return msgObjectOneof_case() == kObjSystem;
 }
@@ -400,7 +559,7 @@ inline void ChatMsg::set_allocated_objsystem(::yunquan::MsgObjSystem* objsystem)
   }
 }
 
-// optional .yunquan.MsgObjText objText = 6;
+// optional .yunquan.MsgObjText objText = 7;
 inline bool ChatMsg::has_objtext() const {
   return msgObjectOneof_case() == kObjText;
 }
@@ -443,7 +602,7 @@ inline void ChatMsg::set_allocated_objtext(::yunquan::MsgObjText* objtext) {
   }
 }
 
-// optional .yunquan.MsgObjImage objImage = 7;
+// optional .yunquan.MsgObjImage objImage = 8;
 inline bool ChatMsg::has_objimage() const {
   return msgObjectOneof_case() == kObjImage;
 }
@@ -486,7 +645,7 @@ inline void ChatMsg::set_allocated_objimage(::yunquan::MsgObjImage* objimage) {
   }
 }
 
-// optional .yunquan.MsgObjVoice objVoice = 8;
+// optional .yunquan.MsgObjVoice objVoice = 9;
 inline bool ChatMsg::has_objvoice() const {
   return msgObjectOneof_case() == kObjVoice;
 }
@@ -529,7 +688,7 @@ inline void ChatMsg::set_allocated_objvoice(::yunquan::MsgObjVoice* objvoice) {
   }
 }
 
-// optional .yunquan.MsgObjVideo objVideo = 9;
+// optional .yunquan.MsgObjVideo objVideo = 10;
 inline bool ChatMsg::has_objvideo() const {
   return msgObjectOneof_case() == kObjVideo;
 }
@@ -572,7 +731,7 @@ inline void ChatMsg::set_allocated_objvideo(::yunquan::MsgObjVideo* objvideo) {
   }
 }
 
-// optional .yunquan.MsgObjLink objLink = 10;
+// optional .yunquan.MsgObjLink objLink = 11;
 inline bool ChatMsg::has_objlink() const {
   return msgObjectOneof_case() == kObjLink;
 }
@@ -615,7 +774,7 @@ inline void ChatMsg::set_allocated_objlink(::yunquan::MsgObjLink* objlink) {
   }
 }
 
-// optional .yunquan.MsgObjCard objCard = 11;
+// optional .yunquan.MsgObjCard objCard = 12;
 inline bool ChatMsg::has_objcard() const {
   return msgObjectOneof_case() == kObjCard;
 }

@@ -4,15 +4,15 @@
 
 #include "Common.h"
 #include "Log.h"
-#include "ChatMsg.pb.h"
 #include "CChatMsgRecv.h"
- 
+#include "ChatMsg.pb.h"
+
  CChatMsgRecv::CChatMsgRecv()
  {
      m_dwFromUid = 0;
-     m_llMsgId = 0;
      m_sendtime = 0;
      m_dwObjType = 0;
+     m_llSyncKey = 0;
  }
  
  CChatMsgRecv::~CChatMsgRecv()
@@ -33,7 +33,7 @@
          return iErr;
      }
      p += dwUsedSize;
- 
+     m_pprotoBuf = (char *)p;
  
      m_Buflen = m_dwLen - dwUsedSize;
      if( m_Buflen > MAX_BUFFER_SIZE )
@@ -70,17 +70,25 @@
          }
          if(pChatMsg->has_msgid())
          {
-             m_llMsgId = pChatMsg->msgid();
+             m_msgId = pChatMsg->msgid();
          }
          if(pChatMsg->has_time())
          {
              m_sendtime = pChatMsg->time();
          }
+         if(pChatMsg->has_synckey())
+         {
+             m_llSyncKey = pChatMsg->synckey();
+         }
+
          if(pChatMsg->has_type())
          {
              m_dwObjType = pChatMsg->type();
          }
- 
+         if(pChatMsg->has_sessionid())
+         {
+             m_dwSessionId = pChatMsg->sessionid();
+         }
          switch(pChatMsg->type())
          {
          case MOT_SYSTEM:
@@ -169,10 +177,14 @@
      pChatMsg->Clear();
  
      pChatMsg->set_fromuid(m_dwFromUid);
-     pChatMsg->set_msgid(m_llMsgId);
+     pChatMsg->set_msgid(m_msgId);
      pChatMsg->set_time(m_sendtime);
+     pChatMsg->set_synckey(m_llSyncKey);
      pChatMsg->set_type((E_MSG_OBJECT_TYPE)m_dwObjType);
- 
+     if(m_dwSessionId != 0)
+     {
+         pChatMsg->set_sessionid(m_dwSessionId);
+     }
      switch(pChatMsg->type())
      {
      case MOT_SYSTEM:
@@ -180,7 +192,7 @@
          MsgObjSystem * pMsgObj = new MsgObjSystem();
          pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
          pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
-         pChatMsg->mutable_objsystem();
+//         pChatMsg->mutable_objsystem();
          pChatMsg->set_allocated_objsystem(pMsgObj);
          break;
      }
@@ -189,7 +201,7 @@
          MsgObjText * pMsgObj = new MsgObjText();
          pMsgObj->set_type(((MsgText*)m_MsgObjBase)->type);
          pMsgObj->set_msg(((MsgText*)m_MsgObjBase)->msg);
-         pChatMsg->mutable_objtext();
+//         pChatMsg->mutable_objtext();
          pChatMsg->set_allocated_objtext(pMsgObj);
          break;
      }
@@ -201,7 +213,7 @@
          pMsgObj->set_h(((MsgImage*)m_MsgObjBase)->h);
          pMsgObj->set_url(((MsgImage*)m_MsgObjBase)->url);
          pMsgObj->set_thumbnailurl(((MsgImage*)m_MsgObjBase)->thumbnailUrl);
-         pChatMsg->mutable_objimage();
+//         pChatMsg->mutable_objimage();
          pChatMsg->set_allocated_objimage(pMsgObj);
          break;
      }
